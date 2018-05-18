@@ -1,0 +1,1 @@
+$ cordova build android --release -- --keystore=./my-release-key.keystore --storePassword=soralove13 --alias=timecrunch --password=soralove13
