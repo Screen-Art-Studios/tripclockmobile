@@ -80,7 +80,7 @@ export default {
   }
 
   .logo {
-    background-image: url('../../assets/TClogo.svg');
+    background-image: url('../../assets/tripclockmobilelogo.svg');
     background-repeat: no-repeat;
     background-size: contain;
     height: 80px;
