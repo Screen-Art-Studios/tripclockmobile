@@ -1,9 +1,9 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="timecrunch.thumbnail.com" version="1.0.11" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
-    <name>Time Crunch</name>
+<widget id="tripclockmobile.thumbnail.com" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+    <name>Trip Clock Mobile</name>
     <description>A mobile technician time clocking and mileage tracking application</description>
-    <author email="royce.birnbaum@gmail.com" href="http://www.screenartstudios.com">
-        Screen Art Studios &amp; Thumbnail Consulting
+    <author email="dev@cordova.apache.org" href="http://cordova.io">
+        Apache Cordova Team
     </author>
     <content src="index.html" />
     <access origin="*" />
@@ -20,9 +20,9 @@
         <allow-intent href="itms:*" />
         <allow-intent href="itms-apps:*" />
     </platform>
-    <plugin name="cordova-plugin-whitelist" spec="^1.3.3" />
-    <plugin name="cordova-plugin-background-mode" spec="^0.7.2" />
     <plugin name="cordova-plugin-geolocation" spec="^4.0.1" />
-    <engine name="ios" spec="^4.5.4" />
+    <plugin name="cordova-plugin-background-mode" spec="^0.7.2" />
+    <plugin name="cordova-plugin-device" spec="^2.0.2" />
+    <plugin name="cordova-plugin-whitelist" spec="^1.3.3" />
     <engine name="android" spec="^7.0.0" />
 </widget>
