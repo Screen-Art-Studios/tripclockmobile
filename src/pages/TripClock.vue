@@ -333,7 +333,7 @@ export default {
 .clock {
   height: 80px;
   position: relative;
-  z-index: 2;
+  z-index: 6;
   text-align: center;
   font-size: 3em;
   grid-row-start: 1;
@@ -343,6 +343,7 @@ export default {
   line-height: 100px;
   color: #fff;
   background-color: @red;
+  box-shadow: 0px 1px 5px black;
 }
 
 .clockRed {
@@ -499,5 +500,6 @@ export default {
 .timeBtn {
   font-weight: 400;
   font-size: 1em;
+  z-index: 3;
 }
 </style>

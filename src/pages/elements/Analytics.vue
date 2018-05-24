@@ -19,7 +19,7 @@
       </div>
       <div class="mileGraphsPane" v-else>
         <h4 v-if="modal==='user'">{{activeUser.name}}'s Mileage Record</h4>
-        <h4>{{totalDistance}} Total Miles Driven</h4>
+        <h4>Total Miles Driven: {{totalDistance}}</h4>
       </div>
     </div>
     <div class="timeTab" v-on:click="pane='time'" v-if="pane!=='readout'">Time</div>
@@ -35,7 +35,7 @@
           </div>
         </div>
         <div class="tripDay" v-bind:key="tripDay.id" v-for="tripDay in tripDays" v-if="pane===''">
-          <h5 v-on:click="tripDay.visible = !tripDay.visible"> {{(tripDay.month + 1)}}/{{tripDay.day}}</h5>
+          <h5 class="date" v-on:click="tripDay.visible = !tripDay.visible"> {{(tripDay.month + 1)}}/{{tripDay.day}}</h5>
           <div class="trips" v-bind:key="trip.id" v-for="trip in tripDay.trips" v-if="tripDay.visible">
             <h5 v-on:click="viewTrip(trip)"> Distance: {{Math.floor(trip.distance / 1609.34)}} Miles</h5>
           </div>
@@ -619,8 +619,10 @@ export default {
 </script>
 
 <style scoped lang="less">
-@red: #c22227;
+@red: #9e2f2f;
 @grey: #323d38;
+@green: #1bad4a;
+@blue: #325e99;
 
 .analytics {
   display: grid;
@@ -636,7 +638,7 @@ export default {
 
 #map {
   width: 100%;
-  height: 260px;
+  height: 60%;
   bottom: 0;
   left: 0;
   right: 0;
@@ -738,6 +740,7 @@ h4 {
   color: #325e99;
   line-height: 10px;
   margin-left: 5%;
+  text-decoration: underline;
 }
 
 h5 {
@@ -783,9 +786,16 @@ input {
   box-shadow: 0px 1px 5px black;
 }
 .trips {
+  padding-top: 0;
+  height: 40px;
   width: 100%;
-  border: 1px solid black;
   padding-left: 5%;
+  border-top: 1px solid black;
+  background-color: white;
+}
+.tripDay {
+  padding: none;
+  box-shadow: 0px 1px 5px black;
 }
 .date {
   color: white;

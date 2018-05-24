@@ -188,8 +188,10 @@ export default {
 </script>
 
 <style scoped lang="less">
-@red: #c90c2e;
+@red: #9e2f2f;
 @grey: #323d38;
+@green: #1bad4a;
+@blue: #325e99;
 
   .main {
     height: 500px;

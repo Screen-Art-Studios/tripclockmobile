@@ -125,8 +125,10 @@ export default {
 </script>
 
 <style scoped lang="less">
-@red: #c90c2e;
+@red: #9e2f2f;
 @grey: #323d38;
+@green: #1bad4a;
+@blue: #325e99;
 
 .main {
   width: 100%;
@@ -140,6 +142,8 @@ h1 {
   color: @red;
   text-shadow: 0px 2px 5px black;
   text-align: center;
+  font-size: 3.5em;
+  font-weight: 400;
 }
 
 h2 {
