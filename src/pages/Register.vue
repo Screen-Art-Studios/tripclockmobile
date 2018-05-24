@@ -194,9 +194,11 @@ export default {
 @blue: #325e99;
 
   .main {
-    height: 500px;
+    background-image: url('../assets/noise2.jpg');
+    position: fixed;
+    height: 100%;
     width: 100%;
-    margin-top: 120px;
+    padding-top: 80px;
   }
 
   h1 {
@@ -208,6 +210,7 @@ export default {
     margin-left: 10%;
     margin-top: 200px;
     margin-bottom: 20px;
+    font-weight: 300;
   }
 
   select option[data-default] {

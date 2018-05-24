@@ -140,7 +140,6 @@ export default {
 
 h1 {
   color: @red;
-  text-shadow: 0px 2px 5px black;
   text-align: center;
   font-size: 3.5em;
   font-weight: 400;

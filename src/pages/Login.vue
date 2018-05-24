@@ -75,14 +75,15 @@ export default {
 
 <style scoped lang="less">
   @font: raleway;
-  @red: #c90c2e;
+  @red: #751d1d;
   @grey: #323d38;
 
   .main {
+    background-image: url('../assets/noise2.jpg');
     position: fixed;
-    height: 400px;
+    height: 100%;
     width: 100%;
-    margin-top: 120px;
+    padding-top: 100px;
   }
 
   h1, h2, h3{
@@ -90,9 +91,10 @@ export default {
   }
 
   h1 {
-    font-size: 3.7em;
     color: @red;
     text-align: center;
+    font-size: 3.5em;
+    font-weight: 400;
   }
 
   .loginBox {
@@ -104,7 +106,7 @@ export default {
   input.email, input.password {
     padding-left: 5px;
     font-size: 1.2em;
-    border: 1.5px solid @red;
+    border: 1.5px solid @grey;
     grid-column-start: 2;
     grid-column-end: 6;
   }
@@ -165,7 +167,7 @@ export default {
 
   .registerlink {
     font-size: 1.25em;
-    color: grey;
+    color: #555;
     grid-row: 9;
     grid-column-start: 2;
     grid-column-end: 6;

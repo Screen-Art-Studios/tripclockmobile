@@ -291,9 +291,9 @@ export default {
 </script>
 
 <style scoped lang="less">
-@red: #9e2f2f;
+@red: #751d1d;
 @grey: #323d38;
-@green: #1bad4a;
+@green: #54961e;
 @blue: #325e99;
 
 .timecrunch {
@@ -307,6 +307,7 @@ export default {
 
 .recenter {
   position: fixed;
+  font-weight: 300;
   width: 100%;
   margin: 0;
   padding: 0;
@@ -336,6 +337,7 @@ export default {
   z-index: 6;
   text-align: center;
   font-size: 3em;
+  font-weight: 300;
   grid-row-start: 1;
   grid-row-end: 1;
   grid-column-start: 1;
@@ -501,5 +503,7 @@ export default {
   font-weight: 400;
   font-size: 1em;
   z-index: 3;
+  background-image: url('../assets/noise.png');
+  border: 1px solid #999;
 }
 </style>

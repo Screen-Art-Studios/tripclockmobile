@@ -625,11 +625,13 @@ export default {
 @blue: #325e99;
 
 .analytics {
+  height: 100%;
   display: grid;
   width: 100%;
   margin: 0;
   grid-template-rows: repeat(5, 100px);
   grid-template-columns: 1fr 1fr 1fr 1fr;
+  overflow-y: scroll;
 }
 
 .fixed {
@@ -638,7 +640,7 @@ export default {
 
 #map {
   width: 100%;
-  height: 60%;
+  height: 45%;
   bottom: 0;
   left: 0;
   right: 0;
