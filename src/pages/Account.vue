@@ -131,11 +131,14 @@ export default {
 .main {
   width: 100%;
   height: 100%;
-  margin-top: 100px;
+  margin-top: 80px;
+  background-image: url('../assets/noise2.jpg');
+  position: fixed;
 }
 
 h1 {
   color: @red;
+  text-shadow: 0px 2px 5px black;
   text-align: center;
 }
 
@@ -161,7 +164,7 @@ select option[data-default] {
 }
 
 button {
-  background: @grey;
+  background-image: url('../assets/noise.png');
   border: none;
   color: #fff;
   font-size: 2em;
@@ -169,6 +172,7 @@ button {
   margin-bottom: 20px;
   margin-left: 5%;
   border-radius: 5px;
+  box-shadow: 0px 2px 5px black;
 }
 
 .accountView {

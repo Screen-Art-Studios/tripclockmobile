@@ -27,10 +27,11 @@
     <div class="modals">
       <div class="userView" v-if="modal==='user'">
         <button class="back" v-on:click="modal=''; resetTime(); populateCompanyClocks(); populateCompanyTrips()">Back</button>
+        <h1>Recent Events</h1>
         <div class="clockDay" v-bind:key="day.id" v-for="day in days" v-if="pane==='time'">
-          <h5 v-on:click="day.visible = !day.visible"> {{(day.month + 1)}}/{{day.day}}</h5>
+          <h5 class="date" v-on:click="day.visible = !day.visible"> {{(day.month + 1)}}/{{day.day}}</h5>
           <div class="clocks" v-bind:key="clock.id" v-for="clock in day.clocks" v-if="day.visible">
-            <h5 v-on:click="viewClock(clock)">{{clock.clockType}} {{clock.hours}}:{{clock.minutes}}</h5>
+            <h5 v-on:click="viewClock(clock)">Confirmed Clock {{clock.clockType}}-{{clock.hours}}:{{clock.minutes}}</h5>
           </div>
         </div>
         <div class="tripDay" v-bind:key="tripDay.id" v-for="tripDay in tripDays" v-if="pane===''">
@@ -49,6 +50,7 @@
         <mapbox id="map" :access-token="mapboxToken" :map-options="mapOptions" @map-load="mapLoaded"></mapbox>
       </div>
       <div class="adminView" v-else>
+        <h1>Employees</h1>
         <div class="user" v-for="user in users" v-bind:key="user.id">
           <h5 v-on:click="viewUser(user)">{{user.name}}</h5>
         </div>
@@ -617,7 +619,7 @@ export default {
 </script>
 
 <style scoped lang="less">
-@red: #c90c2e;
+@red: #c22227;
 @grey: #323d38;
 
 .analytics {
@@ -645,7 +647,7 @@ export default {
   grid-column-start: 1;
   grid-column-end: 3;
   text-align: center;
-  background-color: @grey;
+  background-image: url('../../assets/noise.png');
   height: 30px;
   color: #fff;
   width: 80%;
@@ -653,13 +655,14 @@ export default {
   line-height: 25px;
   border-bottom-left-radius: 8px;
   border-bottom-right-radius: 8px;
+  box-shadow: 0px 2px 5px black;
 }
 
 .mileTab {
   grid-column-start: 3;
   grid-column-end: 5;
   text-align: center;
-  background-color: @grey;
+  background-image: url('../../assets/noise.png');
   height: 30px;
   color: #fff;
   margin-left: 10%;
@@ -667,6 +670,7 @@ export default {
   width: 80%;
   border-bottom-left-radius: 8px;
   border-bottom-right-radius: 8px;
+  box-shadow: 0px 2px 5px black;
 }
 
 .globalSearch {
@@ -684,10 +688,12 @@ export default {
   grid-row-end: 3;
   grid-column-start: 1;
   grid-column-end: 5;
-  border: 3px solid @red;
+  border: 3px solid #444;
   border-radius: 5px;
   width: 96%;
   margin-left: 2%;
+  box-shadow: 0px 2px 5px black;
+  background-color: white;
 }
 
 .modals {
@@ -700,8 +706,8 @@ export default {
 }
 
 .back {
-  margin-top: 5px;
-  width: 20%;
+  margin-top: 6%;
+  width: 45%;
   color: #fff;
   height: 30px;
   font-size: 1.2em;
@@ -709,6 +715,7 @@ export default {
   background-color: @red;
   border: none;
   border-radius: 5px;
+  box-shadow: 0px 2px 5px black;
 }
 
 .mapBack {
@@ -720,18 +727,25 @@ export default {
   position: fixed;
   border-radius: 5px;
 }
-
+h1 {
+  font-size: 2em;
+  text-align: center;
+  font-weight: 500;
+  color: #333;
+}
 h4 {
   font-size: 1em;
-  color: @red;
+  color: #325e99;
   line-height: 10px;
   margin-left: 5%;
 }
 
 h5 {
+  margin-top: 0px;
+  margin-bottom: 0px;
   font-size: 1em;
-  height: 20px;
-  padding: 0px;
+  height: 30px;
+  padding-left: 5%;
 }
 
 h3 {
@@ -757,15 +771,24 @@ input {
 }
 
 .clocks {
+  padding-top: 0;
+  height: 40px;
   width: 100%;
-  border: 1px solid black;
   padding-left: 5%;
+  border-top: 1px solid black;
+  background-color: white;
 }
-
+.clockDay {
+  padding: none;
+  box-shadow: 0px 1px 5px black;
+}
 .trips {
   width: 100%;
   border: 1px solid black;
   padding-left: 5%;
 }
-
+.date {
+  color: white;
+  background-image: url('../../assets/noise.png');
+}
 </style>

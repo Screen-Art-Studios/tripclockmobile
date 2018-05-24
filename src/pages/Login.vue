@@ -2,11 +2,11 @@
   <div class="main">
     <h1>Log-In</h1>
     <div class="loginBox">
-      <div class="emailTitle">email</div>
+      <div class="emailTitle">Email</div>
       <input class="email" placeholder="user@example.com" v-model="email" type="email">
-      <div class="passwordTitle">password</div>
+      <div class="passwordTitle">Password</div>
       <input class="password" placeholder="*********" v-model="password" type="password" v-on:keypress.enter="login">
-      <h3 class="logged">Stay logged In?<input class="logButton" type="checkbox" v-model="stayLogged"></h3>
+      <h3 class="logged">Stay Logged In?<input class="logButton" type="checkbox" v-model="stayLogged"></h3>
       <button class="login" v-on:click="login">Submit</button>
       <h2 class="registerlink" v-on:click="$router.push('/Register')">Create a New Account Here</h2>
     </div>
@@ -91,7 +91,6 @@ export default {
 
   h1 {
     font-size: 3.7em;
-    font-family: @font;
     color: @red;
     text-align: center;
   }
@@ -104,16 +103,14 @@ export default {
 
   input.email, input.password {
     padding-left: 5px;
-    padding-top: 14px;
     font-size: 1.2em;
-    border: none;
-    border-bottom: 1px solid @red;
+    border: 1.5px solid @red;
     grid-column-start: 2;
     grid-column-end: 6;
   }
 
   ::placeholder {
-    color: @grey;
+    color: grey;
     font-size: 1em;
   }
 
@@ -154,7 +151,7 @@ export default {
   }
 
   button {
-    background: @red;
+    background-image: url('../assets/noise.png');
     color: #fff;
     border: none;
     font-size: 1em;
@@ -163,18 +160,18 @@ export default {
     grid-column-start: 5;
     grid-column-end: 6;
     width: 90%;
+    box-shadow: 0px 2px 5px black;
   }
 
   .registerlink {
-    font-family: @font;
     font-size: 1.25em;
-    color: #005389;
+    color: grey;
     grid-row: 9;
     grid-column-start: 2;
     grid-column-end: 6;
     text-align: center;
     text-decoration: underline;
-    text-decoration-color: #005389;
+    text-decoration-color: grey;
   }
 
   @media (min-width: 700px) {

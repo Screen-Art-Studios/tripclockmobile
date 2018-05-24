@@ -237,12 +237,13 @@ export default {
 }
 
   button {
-    background:  @grey;
+    background-image: url('../assets/noise.png');
     color: #fff;
     border: none;
     font-size: 1.5em;
     margin-left: 10px;
     border-radius: 5px;
+    box-shadow: 0px 2px 5px black;
   }
 
   input {
