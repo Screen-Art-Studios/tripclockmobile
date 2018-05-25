@@ -41,6 +41,40 @@ var UserSchema = new mongoose.Schema({
   stripeCustomer: {
     type: String,
     required: true
+  },
+  tempTrip: {
+    latitude: {
+      type: String,
+      required: false
+    },
+    longitude: {
+      type: String,
+      required: false
+    },
+    month: {
+      type: Number,
+      required: false
+    },
+    day: {
+      type: Number,
+      required: false
+    },
+    hour: {
+      type: Number,
+      required: false
+    },
+    minute: {
+      type: Number,
+      required: false
+    },
+    second: {
+      type: Number,
+      required: false
+    }
+  },
+  tripStarted: {
+    type: Boolean,
+    required: false
   }
 })
 

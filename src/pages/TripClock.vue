@@ -1,7 +1,7 @@
 <template>
   <div class="timecrunch">
     <div v-bind:class="clockLogic">{{hours + ':' + minutes + ':' + seconds}}</div>
-    <div class="success" v-if="modal==='success'">
+    <div class="success" v-if="tripModal==='success'">
       <h4 class="succIn" v-if="lastClockType==='in'">Clocked In</h4>
       <div class="succInIcon" v-if="lastClockType==='in'"></div>
       <h4 class="succLunchOut" v-if="lastClockType==='lunch out'">Enjoy Lunch!</h4>
@@ -10,7 +10,7 @@
       <div class="succLunchInIcon" v-if="lastClockType==='lunch in'"></div>
       <h4 class="succOut" v-if="lastClockType==='out'">Clocked Out</h4>
       <div class="succOutIcon" v-if="lastClockType==='out'"></div>
-      <button class="back" v-on:click="modal=''">Back</button>
+      <button class="back" v-on:click="$emit('closeTripModal')">Back</button>
     </div>
     <div class="prettyModal" v-else-if="modal==='pretty'">
       <h2>{{prettyMessage}}</h2>
@@ -33,7 +33,7 @@ import axios from 'axios'
 
 export default {
   name: 'tripclock',
-  props: ['logged', 'user', 'page'],
+  props: ['logged', 'user', 'page', 'coordinates', 'latitude', 'longitude', 'lastClockType', 'tripModal'],
   components: {
     'mapbox': Mapbox
   },
@@ -41,29 +41,8 @@ export default {
     let vue = this
     vue.updateClock()
     setInterval(vue.updateClock, 1000)
-    if (this.logged === false) {
-      this.$router.push('/login')
-    }
-    axios.get('https://api.tripclockmobile.com/users/' + vue.user.id, {headers: { 'Authorization': 'JWT ' + vue.user.token }})
-      .then(function (response) {
-        vue.lastClockType = response.data.lastClockType
-      })
-      .catch(function (error) {
-        console.log(error)
-      })
-    vue.userId = vue.user.id
-    navigator.geolocation.getCurrentPosition(locationSuccess, locationFail)
-    function locationSuccess (position) {
-      vue.latitude = position.coords.latitude
-      vue.longitude = position.coords.longitude
-      vue.altitude = position.coords.altitude
-      vue.accuracy = position.coords.accuracy
-      vue.altitudeAccuracy = position.coords.altitudeAccuracy
-      vue.coordinates = [vue.longitude, vue.latitude]
-    }
-    function locationFail () {
-      vue.prettyModal('It seems we cant find you, please reload the page and try again.')
-      this.locationError = true
+    if (vue.logged === false) {
+      vue.$router.push('/login')
     }
   },
   data () {
@@ -72,19 +51,14 @@ export default {
       modal: '',
       prettyMessage: '',
       endMarker: document.createElement('div'),
-      userId: '',
       time: '',
       month: '',
       day: '',
       hours: '',
       minutes: '',
       seconds: '',
-      clockType: '',
-      lastClockType: '',
+      activeClockType: '',
       distance: 0,
-      latitude: '',
-      longitude: '',
-      coordinates: [0, 0],
       endcoordinates: [-112, 34],
       altitude: '',
       accuracy: '',
@@ -119,19 +93,6 @@ export default {
     },
     recenter () {
       let vue = this
-      function locationSuccess (position) {
-        vue.latitude = position.coords.latitude
-        vue.longitude = position.coords.longitude
-        vue.altitude = position.coords.altitude
-        vue.accuracy = position.coords.accuracy
-        vue.altitudeAccuracy = position.coords.altitudeAccuracy
-        vue.coordinates = [vue.longitude, vue.latitude]
-      }
-      function locationFail () {
-        vue.prettyModal('It seems we cant find you, please reload the page and try again.')
-        this.locationError = true
-      }
-      navigator.geolocation.getCurrentPosition(locationSuccess, locationFail)
       vue.startMarker()
       vue.mapJump()
     },
@@ -171,42 +132,17 @@ export default {
         .setLngLat(vue.coordinates)
         .addTo(vue.map)
     },
-    updateLastClockType () {
-      let vue = this
-      axios.put('https://api.tripclockmobile.com/users/' + vue.user.id, {
-        lastClockType: vue.lastClockType
-      }, {headers: { 'Authorization': 'JWT ' + vue.user.token }})
-        .then(function (user) {
-          vue.modal = 'success'
-        })
-        .catch(function (error) {
-          console.log(error)
-        })
-    },
     clock () {
       let vue = this
-      function locationSuccess (position) {
-        vue.latitude = position.coords.latitude
-        vue.longitude = position.coords.longitude
-        vue.altitude = position.coords.altitude
-        vue.accuracy = position.coords.accuracy
-        vue.altitudeAccuracy = position.coords.altitudeAccuracy
-        vue.coordinates = [vue.longitude, vue.latitude]
-      }
-      function locationFail () {
-        vue.prettyModal('It seems we cant find you, please reload the page and try again.')
-        this.locationError = true
-      }
-      navigator.geolocation.getCurrentPosition(locationSuccess, locationFail)
-      this.time = new Date()
+      vue.time = new Date()
       vue.month = vue.time.getMonth()
       vue.day = vue.time.getDate()
       vue.hours = vue.time.getHours()
       vue.minutes = vue.time.getMinutes()
       vue.seconds = vue.time.getSeconds()
       axios.post('https://api.tripclockmobile.com/clocks', {
-        userId: vue.userId,
-        clockType: vue.clockType,
+        userId: vue.user.id,
+        clockType: vue.activeClockType,
         month: vue.month,
         day: vue.day,
         hours: vue.hours,
@@ -218,9 +154,7 @@ export default {
       })
         .then(function (clock) {
           if (clock.status === 201) {
-            vue.lastClockType = vue.clockType
-            vue.$emit('clockUpdateType', vue.lastClockType)
-            vue.updateLastClockType()
+            vue.$emit('clockUpdateType', vue.activeClockType)
           } else {
             console.log('failed to clock in')
           }
@@ -231,8 +165,8 @@ export default {
     },
     clockIn () {
       let vue = this
-      if (this.lastClockType === 'out') {
-        vue.clockType = 'in'
+      if (vue.lastClockType === 'out') {
+        vue.activeClockType = 'in'
         vue.clock()
       } else {
         vue.prettyModal('You are already clocked in!')
@@ -240,10 +174,10 @@ export default {
     },
     clockOut () {
       let vue = this
-      if (this.lastClockType === 'in' || this.lastClockType === 'lunch in') {
-        this.clockType = 'out'
-        this.clock()
-      } else if (this.lastClockType === 'lunch out') {
+      if (vue.lastClockType === 'in' || vue.lastClockType === 'lunch in') {
+        vue.activeClockType = 'out'
+        vue.clock()
+      } else if (vue.lastClockType === 'lunch out') {
         vue.prettyModal('You are out to lunch!')
       } else {
         vue.prettyModal('You are not clocked in!')
@@ -251,12 +185,12 @@ export default {
     },
     lunchOut () {
       let vue = this
-      if (this.lastClockType === 'in') {
-        this.clockType = 'lunch out'
-        this.clock()
-      } else if (this.lastClockType === 'lunch out') {
+      if (vue.lastClockType === 'in') {
+        vue.activeClockType = 'lunch out'
+        vue.clock()
+      } else if (vue.lastClockType === 'lunch out') {
         vue.prettyModal('Lunch has Started!')
-      } else if (this.lastClockType === 'lunch in') {
+      } else if (vue.lastClockType === 'lunch in') {
         vue.prettyModal('Lunch is Over!')
       } else {
         vue.prettyModal('You are not clocked in!')
@@ -264,12 +198,12 @@ export default {
     },
     lunchIn () {
       let vue = this
-      if (this.lastClockType === 'lunch out') {
-        this.clockType = 'lunch in'
-        this.clock()
-      } else if (this.lastClockType === 'out') {
+      if (vue.lastClockType === 'lunch out') {
+        vue.activeClockType = 'lunch in'
+        vue.clock()
+      } else if (vue.lastClockType === 'out') {
         vue.prettyModal('You are not clocked in!')
-      } else if (this.lastClockType === 'in') {
+      } else if (vue.lastClockType === 'in') {
         vue.prettyModal('Start Lunch first!')
       } else {
         vue.prettyModal('Lunch is Over!')

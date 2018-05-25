@@ -124,7 +124,7 @@ export default {
           if (response.data.length === 0) {
             vue.company = true
             vue.modal = 'register'
-            var stripe = window.Stripe('pk_live_dMLr0hShLxaZmXesv1buhndd')
+            var stripe = window.Stripe('')
             vue.stripeSetup(stripe)
           } else {
             vue.taken = true

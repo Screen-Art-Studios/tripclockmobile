@@ -26,7 +26,7 @@
     <div class="mileTab" v-on:click="pane=''" v-if="pane!=='readout'">Distance</div>
     <div class="modals">
       <div class="userView" v-if="modal==='user'">
-        <button class="back" v-on:click="modal=''; resetTime(); populateCompanyClocks(); populateCompanyTrips()">Back</button>
+        <button class="back" v-on:click="modal=''; resetTime(); resetTrips(); populateCompanyClocks(); populateCompanyTrips()">Back</button>
         <div class="clockDay" v-bind:key="day.id" v-for="day in days" v-if="pane==='time'">
           <h5 v-on:click="day.visible = !day.visible"> {{(day.month + 1)}}/{{day.day}}</h5>
           <div class="clocks" v-bind:key="clock.id" v-for="clock in day.clocks" v-if="day.visible">
@@ -41,11 +41,11 @@
         </div>
       </div>
       <div class="clockMapView" v-else-if="modal==='clock'">
-        <button class="mapBack" v-on:click="modal='user'; pane='time'; resetTime(); populateCompanyClocks(); populateCompanyTrips()">Back</button>
+        <button class="mapBack" v-on:click="modal='user'; pane='time'; resetTime(); resetTrips(); populateCompanyClocks(); populateCompanyTrips()">Back</button>
         <mapbox id="map" :access-token="mapboxToken" :map-options="mapOptions" @map-load="mapLoaded"></mapbox>
       </div>
       <div class="tripMapView" v-else-if="modal==='trip'">
-        <button class="mapBack" v-on:click="modal='user'; pane=''; resetTime(); populateCompanyClocks(); populateCompanyTrips()">Back</button>
+        <button class="mapBack" v-on:click="modal='user'; pane=''; resetTime(); resetTrips(); populateCompanyClocks(); populateCompanyTrips()">Back</button>
         <mapbox id="map" :access-token="mapboxToken" :map-options="mapOptions" @map-load="mapLoaded"></mapbox>
       </div>
       <div class="adminView" v-else>
@@ -187,6 +187,7 @@ export default {
     viewUser (user) {
       let vue = this
       vue.days = []
+      vue.tripDays = []
       vue.totalHours = 0
       vue.totalDistance = 0
       vue.totalTime = {
@@ -210,7 +211,7 @@ export default {
               vue.tripMatch = true
               let thing = response.data[j]
               vue.tripDays.push({day: thing.start.day, month: thing.start.month, visible: false, trips: [thing]})
-              break
+              continue
             }
             let q = 0
             for (q = 0; q < vue.tripDays.length; q++) {
@@ -238,18 +239,23 @@ export default {
             if (vue.tripMatch === true) {
               vue.tripMatch = false
             } else {
-              console.log(vue.tripDays[0].month)
               let z = 0
               for (z = 0; z < vue.tripDays.length; z++) {
                 if (vue.tripDays[z].month === response.data[j].start.month) {
                   if (vue.tripDays[z].day > response.data[j].start.day) {
                     vue.tripDays.splice((z), 0, {day: response.data[j].start.day, month: response.data[j].start.month, visible: false, trips: [response.data[j]]})
                     break
+                  } else {
+                    let thing = response.data[j]
+                    vue.tripDays.push({day: thing.start.day, month: thing.start.month, visible: false, trips: [thing]})
+                    break
                   }
                 } else if (vue.tripDays[z].month > response.data[j].start.month) {
                   vue.tripDays.splice((z), 0, {day: response.data[j].start.day, month: response.data[j].start.month, visible: false, trips: [response.data[j]]})
                   break
                 } else {
+                  let thing = response.data[j]
+                  vue.tripDays.push({day: thing.start.day, month: thing.start.month, visible: false, trips: [thing]})
                   break
                 }
               }
@@ -270,6 +276,11 @@ export default {
         minutes: 0,
         seconds: 0
       }
+    },
+    resetTrips () {
+      let vue = this
+      vue.totalDistance = 0
+      vue.activeTrips = []
     },
     populateUserClocks () {
       let vue = this
@@ -442,10 +453,10 @@ export default {
       vue.activeTrip.end.hour = trip.end.hour
       vue.activeTrip.end.minute = trip.end.minute
       vue.activeTrip.end.second = trip.end.second
-      vue.activeTrip.start.latitude = trip.start.longitude
-      vue.activeTrip.start.longitude = trip.start.latitude
-      vue.activeTrip.end.latitude = trip.end.longitude
-      vue.activeTrip.end.longitude = trip.end.latitude
+      vue.activeTrip.start.latitude = trip.start.latitude
+      vue.activeTrip.start.longitude = trip.start.longitude
+      vue.activeTrip.end.latitude = trip.end.latitude
+      vue.activeTrip.end.longitude = trip.end.longitude
       vue.startCoordinates = [trip.start.longitude, trip.start.latitude]
       vue.endCoordinates = [trip.end.longitude, trip.end.latitude]
       vue.pane = 'readout'
@@ -493,78 +504,78 @@ export default {
       console.log(vue.zoomNum)
       if (vue.zoomNum >= 20) {
         vue.map.jumpTo({
-          center: [vue.cy, vue.cx],
+          center: [vue.cx, vue.cy],
           zoom: 3
         })
       } else if (vue.zoomNum >= 10) {
         vue.map.jumpTo({
-          center: [vue.cy, vue.cx],
+          center: [vue.cx, vue.cy],
           zoom: 4
         })
       } else if (vue.zoomNum >= 5) {
         vue.map.jumpTo({
-          center: [vue.cy, vue.cx],
+          center: [vue.cx, vue.cy],
           zoom: 5
         })
-      } else if (vue.zoomNum >= 1) {
+      } else if (vue.zoomNum >= 4) {
         vue.map.jumpTo({
-          center: [vue.cy, vue.cx],
+          center: [vue.cx, vue.cy],
           zoom: 6
         })
-      } else if (vue.zoomNum >= 0.1) {
+      } else if (vue.zoomNum >= 3) {
         vue.map.jumpTo({
-          center: [vue.cy, vue.cx],
+          center: [vue.cx, vue.cy],
           zoom: 7
         })
-      } else if (vue.zoomNum >= 0.001) {
+      } else if (vue.zoomNum >= 2.5) {
         vue.map.jumpTo({
           center: [vue.cx, vue.cy],
           zoom: 8
         })
-      } else if (vue.zoomNum >= 0.0001) {
+      } else if (vue.zoomNum >= 2) {
         vue.map.jumpTo({
-          center: [vue.cy, vue.cx],
+          center: [vue.cx, vue.cy],
           zoom: 9
         })
-      } else if (vue.zoomNum >= 0.00001) {
+      } else if (vue.zoomNum >= 1.5) {
         vue.map.jumpTo({
-          center: [vue.cy, vue.cx],
+          center: [vue.cx, vue.cy],
           zoom: 10
         })
-      } else if (vue.zoomNum >= 0.000001) {
+      } else if (vue.zoomNum >= 1) {
         vue.map.jumpTo({
-          center: [vue.cy, vue.cx],
+          center: [vue.cx, vue.cy],
           zoom: 11
         })
-      } else if (vue.zoomNum >= 0.0000001) {
+      } else if (vue.zoomNum >= 0.5) {
         vue.map.jumpTo({
-          center: [vue.cy, vue.cx],
+          center: [vue.cx, vue.cy],
           zoom: 12
         })
-      } else if (vue.zoomNum >= 0.00000001) {
+      } else if (vue.zoomNum >= 0.1) {
         vue.map.jumpTo({
-          center: [vue.cy, vue.cx],
+          center: [vue.cx, vue.cy],
           zoom: 13
         })
-      } else if (vue.zoomNum >= 0.000000001) {
+      } else if (vue.zoomNum >= 0.05) {
         vue.map.jumpTo({
-          center: [vue.cy, vue.cx],
+          center: [vue.cx, vue.cy],
           zoom: 14
         })
-      } else if (vue.zoomNum >= 0.0000000001) {
+      } else if (vue.zoomNum >= 0.001) {
         vue.map.jumpTo({
-          center: [vue.cy, vue.cx],
+          center: [vue.cx, vue.cy],
           zoom: 15
         })
-      } else if (vue.zoomNum >= 0.000000000001) {
+      } else if (vue.zoomNum >= 0.0001) {
         vue.map.jumpTo({
-          center: [vue.cy, vue.cx],
+          center: [vue.cx, vue.cy],
           zoom: 16
         })
       } else {
         vue.map.jumpTo({
-          center: [vue.cy, vue.cx],
-          zoom: 5
+          center: [vue.cx, vue.cy],
+          zoom: 15
         })
       }
     },

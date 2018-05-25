@@ -5,13 +5,14 @@
       <h2>{{prettyMessage}}</h2>
       <button class="prettyBack" v-on:click="modal=''">Back</button>
     </div>
-    <router-view v-on:login="log" v-on:register="register" v-on:account="account" v-on:clockUpdateType="updateClock" :logged="logged" :user="user" :page="page" :accountView="accountView"/>
+    <router-view v-on:login="log" v-on:register="register" v-on:account="account" v-on:clockUpdateType="updateClock" v-on:closeTripModal="tripModal=''" :tripModal="tripModal" :logged="logged" :user="user" :page="page" :coordinates="coordinates" :latitude="latitude" :longitude="longitude" :lastClockType="lastClockType" :accountView="accountView"/>
   </div>
 </template>
 
 <script>
 import axios from 'axios'
 import navbar from './pages/elements/Navbar'
+import Decimal from 'decimal'
 
 export default {
   name: 'app',
@@ -26,20 +27,28 @@ export default {
     vue.user.admin = Boolean(localStorage.getItem('admin'))
     if (vue.user.token !== null) {
       vue.logged = true
-      axios.get('https://api.timecrunchapp.com/users/' + vue.user.id, {headers: { 'Authorization': 'JWT ' + vue.user.token }})
-        .then(function (response) {
-          vue.lastClockType = response.data.lastClockType
+      axios.get('https://api.tripclockmobile.com/users/' + vue.user.id, {headers: { 'Authorization': 'JWT ' + vue.user.token }})
+        .then(result => {
+          vue.lastClockType = result.data.lastClockType
+          if (result.data.tempTrip) {
+            vue.trip.start = result.data.tempTrip
+            vue.trip.start.coordinates = [parseInt(result.data.tempTrip.longitude), parseInt(result.data.tempTrip.latitude)]
+            vue.tripStarted = result.data.tripStarted
+          }
         })
-        .catch(function (error) {
-          console.log(error)
+        .catch(err => {
+          console.log(err)
         })
     }
+    navigator.geolocation.getCurrentPosition(vue.locationSuccess, vue.locationFail)
     vue.tripLogic()
   },
   data: function () {
     return {
       modal: '',
+      tripModal: '',
       page: '',
+      watch: false,
       accountView: '',
       prettyMessage: '',
       logged: false,
@@ -94,6 +103,19 @@ export default {
     updateClock (lastClockType) {
       let vue = this
       vue.lastClockType = lastClockType
+      vue.updateLastClockType()
+    },
+    updateLastClockType () {
+      let vue = this
+      axios.put('https://api.tripclockmobile.com/users/' + vue.user.id, {
+        lastClockType: vue.lastClockType
+      }, {headers: { 'Authorization': 'JWT ' + vue.user.token }})
+        .then(function (user) {
+          vue.tripModal = 'success'
+        })
+        .catch(function (error) {
+          console.log(error)
+        })
     },
     account (view) {
       let vue = this
@@ -139,22 +161,35 @@ export default {
       let vue = this
       if (vue.firstStarted === true) {
         navigator.geolocation.getCurrentPosition(vue.locationSuccess, vue.locationFail)
-      } else if (vue.lastClockType === 'in' || 'lunch in') {
+      } else if (vue.lastClockType === 'in' || vue.lastClockType === 'lunch in') {
         vue.pastCoordinates = vue.coordinates
-        navigator.geolocation.getCurrentPosition(vue.mileageLocationSuccess, vue.locationFail)
+        if (vue.watch === false) {
+          navigator.geolocation.watchPosition(vue.mileageLocationSuccess)
+          vue.watch = true
+        }
+      } else {
+        navigator.geolocation.clearWatch()
+        vue.watch = false
       }
     },
     locationSuccess (position) {
       let vue = this
-      vue.coordinates = [position.coords.longitude.toPrecision(6), position.coords.latitude.toPrecision(5)]
+      vue.coordinates = [position.coords.longitude.toPrecision(12), position.coords.latitude.toPrecision(12)]
+      vue.latitude = position.coords.latitude.toPrecision(12)
+      vue.longitude = position.coords.longitude.toPrecision(12)
       vue.pastCoordinates = vue.coordinates
       vue.firstStarted = false
     },
     mileageLocationSuccess (position) {
       let vue = this
-      vue.coordinates = [position.coords.longitude.toPrecision(6), position.coords.latitude.toPrecision(5)]
+      vue.coordinates = [position.coords.longitude.toPrecision(12), position.coords.latitude.toPrecision(12)]
+      vue.latitude = position.coords.latitude.toPrecision(12)
+      vue.longitude = position.coords.longitude.toPrecision(12)
       if (vue.tripStarted === false) {
-        if (vue.pastCoordinates[0] !== vue.coordinates[0] || vue.pastCoordinates[1] !== vue.coordinates[1]) {
+        let diffLat = Math.abs(Decimal(Math.abs(vue.pastCoordinates[0])).sub(Math.abs(vue.coordinates[0])))
+        let diffLong = Math.abs(Decimal(Math.abs(vue.pastCoordinates[1])).sub(Math.abs(vue.coordinates[1])))
+        let totalDiff = Decimal(diffLat).add(diffLong).toNumber()
+        if (totalDiff > 0.01) {
           vue.trip.start.startCoordinates = vue.pastCoordinates
           vue.time = new Date()
           vue.trip.start.month = vue.time.getMonth()
@@ -165,10 +200,22 @@ export default {
           vue.trip.start.latitude = vue.pastCoordinates[1]
           vue.trip.start.longitude = vue.pastCoordinates[0]
           vue.tripStarted = true
-          console.log('trip started')
+          axios.post('https://api.tripclockmobile.com/users/trip/' + vue.user.id, {
+            tempTrip: vue.trip.start,
+            tripStarted: true
+          }, {headers: { 'Authorization': 'JWT ' + vue.user.token }})
+            .then(result => {
+              console.log('trip started')
+            })
+            .catch(err => {
+              console.log(err)
+            })
         }
       } else if (vue.tripStarted === true) {
-        if (vue.pastCoordinates[0] === vue.coordinates[0] && vue.pastCoordinates[1] === vue.coordinates[1]) {
+        let diffLat = Math.abs(Decimal(Math.abs(vue.pastCoordinates[0])).sub(Math.abs(vue.coordinates[0])))
+        let diffLong = Math.abs(Decimal(Math.abs(vue.pastCoordinates[1])).sub(Math.abs(vue.coordinates[1])))
+        let totalDiff = Decimal(diffLat).add(diffLong).toNumber()
+        if (totalDiff > 0.01) {
           vue.trip.end.endCoordinates = vue.coordinates
           vue.time = new Date()
           vue.trip.end.month = vue.time.getMonth()
@@ -181,8 +228,15 @@ export default {
           vue.trip.userId = vue.user.id
           vue.getDirections()
           vue.postTrip()
-          console.log('trip ended')
-          vue.tripStarted = false
+          axios.post('https://api.tripclockmobile.com/users/tripclear/' + vue.user.id, {
+          }, {headers: { 'Authorization': 'JWT ' + vue.user.token }})
+            .then(result => {
+              console.log('trip ended')
+              vue.tripStarted = false
+            })
+            .catch(err => {
+              console.log(err)
+            })
         }
       }
     },
@@ -202,7 +256,7 @@ export default {
     },
     postTrip () {
       let vue = this
-      axios.post('https://api.timecrunchapp.com/trips', {
+      axios.post('https://api.tripclockmobile.com/trips', {
         userId: vue.user.id,
         start: {
           latitude: vue.trip.start.latitude,
@@ -225,6 +279,30 @@ export default {
         distance: vue.trip.distance
       })
         .then(function (response) {
+          vue.trip = {
+            userId: '',
+            distance: 0,
+            start: {
+              startCoordinates: [0, 0],
+              latitude: '',
+              longitude: '',
+              day: 0,
+              month: 0,
+              hour: 0,
+              minute: 0,
+              second: 0
+            },
+            end: {
+              endCoordinates: [0, 0],
+              latitude: '',
+              longitude: '',
+              day: 0,
+              month: 0,
+              hour: 0,
+              minute: 0,
+              second: 0
+            }
+          }
           console.log('trip Success!!')
         })
         .catch(function (error) {
@@ -242,7 +320,7 @@ export default {
     },
     tripLogic () {
       let vue = this
-      setInterval(function () { vue.mileageLogic() }, 30000)
+      setInterval(function () { vue.mileageLogic() }, 15000)
       vue.$router.push('/')
     }
   }
