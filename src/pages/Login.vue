@@ -153,7 +153,7 @@ export default {
   }
 
   button {
-    background-image: url('../assets/noise.png');
+    background-image: url('../assets/noisered.png');
     color: #fff;
     border: none;
     font-size: 1em;

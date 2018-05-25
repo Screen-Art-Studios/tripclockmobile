@@ -327,7 +327,7 @@ export default {
     width: 34%;
     margin-left: 5%;
     margin-top: 10px;
-    background-color: @red;
+    background-image: url('../assets/noisered.png');
   }
 
   @media (min-width: 700px) {

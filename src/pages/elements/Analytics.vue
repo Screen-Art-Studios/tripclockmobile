@@ -716,7 +716,7 @@ export default {
   height: 30px;
   font-size: 1.2em;
   font-weight: 400;
-  background-color: @red;
+  background-image: url('../../assets/noisered.png');
   border: none;
   border-radius: 5px;
   box-shadow: 0px 2px 5px black;

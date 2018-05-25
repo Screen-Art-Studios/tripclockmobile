@@ -323,16 +323,15 @@ export default {
 #map {
   width: 100%;
   height: 100%;
-  padding-top: none;
   padding-bottom: 50px;
   z-index: 0;
   position: fixed;
-  top: 180px;
+  top: 190px;
   bottom: 50px;
 }
 
 .clock {
-  height: 80px;
+  height: 81px;
   position: relative;
   z-index: 6;
   text-align: center;
@@ -344,8 +343,9 @@ export default {
   grid-column-end: 7;
   line-height: 100px;
   color: #fff;
-  background-color: @red;
+  background-image: url('../assets/noisered.png');
   box-shadow: 0px 1px 5px black;
+  text-shadow: 0px 2px 5px black;
 }
 
 .clockRed {
