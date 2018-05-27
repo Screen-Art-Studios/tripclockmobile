@@ -30,10 +30,22 @@ export default {
       axios.get('https://api.tripclockmobile.com/users/' + vue.user.id, {headers: { 'Authorization': 'JWT ' + vue.user.token }})
         .then(result => {
           vue.lastClockType = result.data.lastClockType
-          if (result.data.tempTrip) {
+          let today = new Date().getDate()
+          let month = new Date().getMonth()
+          if (result.data.tempTrip.day === today && result.data.tempTrip.month === month) {
             vue.trip.start = result.data.tempTrip
             vue.trip.start.coordinates = [parseInt(result.data.tempTrip.longitude), parseInt(result.data.tempTrip.latitude)]
             vue.tripStarted = result.data.tripStarted
+          } else {
+            axios.post('https://api.tripclockmobile.com/users/tripclear/' + vue.user.id, {
+            }, {headers: { 'Authorization': 'JWT ' + vue.user.token }})
+              .then(result => {
+                console.log('trip ended')
+                vue.tripStarted = false
+              })
+              .catch(err => {
+                console.log(err)
+              })
           }
         })
         .catch(err => {
@@ -161,16 +173,74 @@ export default {
       let vue = this
       if (vue.firstStarted === true) {
         navigator.geolocation.getCurrentPosition(vue.locationSuccess, vue.locationFail)
-      } else if (vue.lastClockType === 'in' || vue.lastClockType === 'lunch in') {
-        vue.pastCoordinates = vue.coordinates
         if (vue.watch === false) {
           navigator.geolocation.watchPosition(vue.mileageLocationSuccess)
           vue.watch = true
+        }
+      } else if (vue.lastClockType === 'in' || vue.lastClockType === 'lunch in') {
+        if (vue.watch === false) {
+          navigator.geolocation.watchPosition(vue.mileageLocationSuccess)
+          vue.watch = true
+        }
+        if (vue.tripStarted === false) {
+          let diffLat = Math.abs(Decimal(Math.abs(vue.pastCoordinates[0])).sub(Math.abs(vue.coordinates[0])))
+          let diffLong = Math.abs(Decimal(Math.abs(vue.pastCoordinates[1])).sub(Math.abs(vue.coordinates[1])))
+          let totalDiff = Decimal(diffLat).add(diffLong).toNumber()
+          if (totalDiff > 0.0007) {
+            vue.trip.start.startCoordinates = vue.pastCoordinates
+            vue.time = new Date()
+            vue.trip.start.month = vue.time.getMonth()
+            vue.trip.start.day = vue.time.getDate()
+            vue.trip.start.hour = vue.time.getHours()
+            vue.trip.start.minute = vue.time.getMinutes()
+            vue.trip.start.second = vue.time.getSeconds()
+            vue.trip.start.latitude = vue.pastCoordinates[1]
+            vue.trip.start.longitude = vue.pastCoordinates[0]
+            vue.tripStarted = true
+            axios.post('https://api.tripclockmobile.com/users/trip/' + vue.user.id, {
+              tempTrip: vue.trip.start,
+              tripStarted: true
+            }, {headers: { 'Authorization': 'JWT ' + vue.user.token }})
+              .then(result => {
+                console.log('trip started')
+              })
+              .catch(err => {
+                console.log(err)
+              })
+          }
+        } else if (vue.tripStarted === true) {
+          let diffLat = Math.abs(Decimal(Math.abs(vue.pastCoordinates[0])).sub(Math.abs(vue.coordinates[0])))
+          let diffLong = Math.abs(Decimal(Math.abs(vue.pastCoordinates[1])).sub(Math.abs(vue.coordinates[1])))
+          let totalDiff = Decimal(diffLat).add(diffLong).toNumber()
+          if (totalDiff < 0.0007) {
+            vue.trip.end.endCoordinates = vue.coordinates
+            vue.time = new Date()
+            vue.trip.end.month = vue.time.getMonth()
+            vue.trip.end.day = vue.time.getDate()
+            vue.trip.end.hour = vue.time.getHours()
+            vue.trip.end.minute = vue.time.getMinutes()
+            vue.trip.end.second = vue.time.getSeconds()
+            vue.trip.end.latitude = vue.coordinates[1]
+            vue.trip.end.longitude = vue.coordinates[0]
+            vue.trip.userId = vue.user.id
+            vue.getDirections()
+            vue.postTrip()
+            axios.post('https://api.tripclockmobile.com/users/tripclear/' + vue.user.id, {
+            }, {headers: { 'Authorization': 'JWT ' + vue.user.token }})
+              .then(result => {
+                console.log('trip ended')
+                vue.tripStarted = false
+              })
+              .catch(err => {
+                console.log(err)
+              })
+          }
         }
       } else {
         navigator.geolocation.clearWatch()
         vue.watch = false
       }
+      vue.pastCoordinates = vue.coordinates
     },
     locationSuccess (position) {
       let vue = this
@@ -185,60 +255,6 @@ export default {
       vue.coordinates = [position.coords.longitude.toPrecision(12), position.coords.latitude.toPrecision(12)]
       vue.latitude = position.coords.latitude.toPrecision(12)
       vue.longitude = position.coords.longitude.toPrecision(12)
-      if (vue.tripStarted === false) {
-        let diffLat = Math.abs(Decimal(Math.abs(vue.pastCoordinates[0])).sub(Math.abs(vue.coordinates[0])))
-        let diffLong = Math.abs(Decimal(Math.abs(vue.pastCoordinates[1])).sub(Math.abs(vue.coordinates[1])))
-        let totalDiff = Decimal(diffLat).add(diffLong).toNumber()
-        if (totalDiff > 0.01) {
-          vue.trip.start.startCoordinates = vue.pastCoordinates
-          vue.time = new Date()
-          vue.trip.start.month = vue.time.getMonth()
-          vue.trip.start.day = vue.time.getDate()
-          vue.trip.start.hour = vue.time.getHours()
-          vue.trip.start.minute = vue.time.getMinutes()
-          vue.trip.start.second = vue.time.getSeconds()
-          vue.trip.start.latitude = vue.pastCoordinates[1]
-          vue.trip.start.longitude = vue.pastCoordinates[0]
-          vue.tripStarted = true
-          axios.post('https://api.tripclockmobile.com/users/trip/' + vue.user.id, {
-            tempTrip: vue.trip.start,
-            tripStarted: true
-          }, {headers: { 'Authorization': 'JWT ' + vue.user.token }})
-            .then(result => {
-              console.log('trip started')
-            })
-            .catch(err => {
-              console.log(err)
-            })
-        }
-      } else if (vue.tripStarted === true) {
-        let diffLat = Math.abs(Decimal(Math.abs(vue.pastCoordinates[0])).sub(Math.abs(vue.coordinates[0])))
-        let diffLong = Math.abs(Decimal(Math.abs(vue.pastCoordinates[1])).sub(Math.abs(vue.coordinates[1])))
-        let totalDiff = Decimal(diffLat).add(diffLong).toNumber()
-        if (totalDiff > 0.01) {
-          vue.trip.end.endCoordinates = vue.coordinates
-          vue.time = new Date()
-          vue.trip.end.month = vue.time.getMonth()
-          vue.trip.end.day = vue.time.getDate()
-          vue.trip.end.hour = vue.time.getHours()
-          vue.trip.end.minute = vue.time.getMinutes()
-          vue.trip.end.second = vue.time.getSeconds()
-          vue.trip.end.latitude = vue.coordinates[1]
-          vue.trip.end.longitude = vue.coordinates[0]
-          vue.trip.userId = vue.user.id
-          vue.getDirections()
-          vue.postTrip()
-          axios.post('https://api.tripclockmobile.com/users/tripclear/' + vue.user.id, {
-          }, {headers: { 'Authorization': 'JWT ' + vue.user.token }})
-            .then(result => {
-              console.log('trip ended')
-              vue.tripStarted = false
-            })
-            .catch(err => {
-              console.log(err)
-            })
-        }
-      }
     },
     locationFail () {
       alert('It seems we cant find you, please reload the page and try again.')
