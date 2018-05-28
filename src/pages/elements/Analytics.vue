@@ -800,6 +800,7 @@ input {
   box-shadow: 0px 1px 5px black;
 }
 .date {
+  margin-top: 15px;
   color: white;
   background-image: url('../../assets/noise.png');
 }
