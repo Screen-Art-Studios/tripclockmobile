@@ -188,13 +188,17 @@ export default {
 </script>
 
 <style scoped lang="less">
-@red: #c90c2e;
+@red: #9e2f2f;
 @grey: #323d38;
+@green: #1bad4a;
+@blue: #325e99;
 
   .main {
-    height: 500px;
+    background-image: url('../assets/noise2.jpg');
+    position: fixed;
+    height: 100%;
     width: 100%;
-    margin-top: 120px;
+    padding-top: 80px;
   }
 
   h1 {
@@ -206,6 +210,7 @@ export default {
     margin-left: 10%;
     margin-top: 200px;
     margin-bottom: 20px;
+    font-weight: 300;
   }
 
   select option[data-default] {
@@ -237,12 +242,13 @@ export default {
 }
 
   button {
-    background:  @grey;
+    background-image: url('../assets/noise.png');
     color: #fff;
     border: none;
     font-size: 1.5em;
     margin-left: 10px;
     border-radius: 5px;
+    box-shadow: 0px 2px 5px black;
   }
 
   input {
@@ -321,7 +327,7 @@ export default {
     width: 34%;
     margin-left: 5%;
     margin-top: 10px;
-    background-color: @red;
+    background-image: url('../assets/noisered.png');
   }
 
   @media (min-width: 700px) {

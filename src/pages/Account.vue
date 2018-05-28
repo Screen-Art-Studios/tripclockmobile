@@ -125,18 +125,24 @@ export default {
 </script>
 
 <style scoped lang="less">
-@red: #c90c2e;
+@red: #9e2f2f;
 @grey: #323d38;
+@green: #1bad4a;
+@blue: #325e99;
 
 .main {
   width: 100%;
   height: 100%;
-  margin-top: 100px;
+  margin-top: 80px;
+  background-image: url('../assets/noise2.jpg');
+  position: fixed;
 }
 
 h1 {
   color: @red;
   text-align: center;
+  font-size: 3.5em;
+  font-weight: 400;
 }
 
 h2 {
@@ -161,7 +167,7 @@ select option[data-default] {
 }
 
 button {
-  background: @grey;
+  background-image: url('../assets/noise.png');
   border: none;
   color: #fff;
   font-size: 2em;
@@ -169,6 +175,7 @@ button {
   margin-bottom: 20px;
   margin-left: 5%;
   border-radius: 5px;
+  box-shadow: 0px 2px 5px black;
 }
 
 .accountView {

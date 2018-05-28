@@ -1,17 +1,18 @@
 <template>
   <div class="main">
     <div class="navbar">
-      <div class="logo" v-on:click="$router.push('/')"></div>
-      <div v-bind:class="nvLogic" v-on:click="navToggle"></div>
-      <div v-bind:class="navpaneLogic">
-        <button class="Home" v-on:click="navToggle(); $router.push('/')" v-if="logged">Home</button>
-        <button class="Login" v-on:click="navToggle(); $router.push('/Login')" v-if="!logged">Login</button>
-        <button class="Reg" v-on:click="navToggle(); $router.push('/Register')" v-if="!logged">Register</button>
-        <button class="Account" v-on:click="navToggle(); $router.push('/Account'); $emit('account')" v-if="logged">Account</button>
-        <button class="Logout" v-on:click="navToggle(); $emit('logout')" v-if="logged">Logout</button>
+        <button class="Home" v-on:click="$router.push('/')" v-if="logged"></button>
+        <h1 class="Homet" v-on:click="$router.push('/')" v-if="logged">Home</h1>
+        <button class="Login" v-on:click=" $router.push('/Login')" v-if="!logged"></button>
+        <h1 class="Logint" v-on:click=" $router.push('/Login')" v-if="!logged">Login</h1>
+        <button class="Reg" v-on:click=" $router.push('/Register')" v-if="!logged"></button>
+        <h1 class="Regt" v-on:click=" $router.push('/Register')" v-if="!logged">Register</h1>
+        <button class="Account" v-on:click=" $router.push('/Account'); $emit('account')" v-if="logged"></button>
+        <h1 class="Accounta" v-on:click="$router.push('/Account')" v-if="logged">Account</h1>
+        <button class="Logout" v-on:click=" $emit('logout')" v-if="logged"></button>
+        <h1 class="Logouta" v-on:click=" $emit('logout')" v-if="logged">Logout</h1>
     </div>
   </div>
-</div>
 </template>
 
 <script>
@@ -79,84 +80,128 @@ export default {
     width: 100%;
   }
 
-  .logo {
-    background-image: url('../../assets/tripclockmobilelogo.svg');
-    background-repeat: no-repeat;
-    background-size: contain;
-    height: 80px;
-    width: 200px;
-    margin-top: 16px;
-    margin-left: 10px;
-  }
-
-  .nv {
-    width: 80px;
-    height: 80px;
-    overflow: hidden;
-    margin-top: 10px;
-    margin-right: 20px;
-    grid-column: 3;
-    z-index: 8;
-    background-repeat: no-repeat;
-    background-image: url("../../assets/navbuttonAnimationWhiteBorder.svg");
-  }
-
   .Login {
-    z-index: 11;
-    color: #fff;
-    font-size: 2em;
-    font-weight: 400;
+    background-image: url('../../assets/tc_Time2.svg');
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+    grid-row: 1;
     grid-column: 1;
+    font-size: 1em;
+    line-height: 10px;
+    font-weight: 400;
+    margin-top: 10px;
+    color: #999;
+  }
+  .Logint {
+    grid-row: 2;
+    font-size: 1em;
+    line-height: 10px;
+    font-weight: 400;
+    color: #999;
   }
 
   .Reg {
-    z-index: 11;
-    color: #fff;
-    font-size: 2em;
-    font-weight: 400;
+    background-image: url('../../assets/tc_Odometer2.svg');
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
     grid-column: 3;
+    grid-row: 1;
+    font-size: 1em;
+    line-height: 10px;
+    font-weight: 400;
+    color: #999;
+    margin-top: 10px;
+  }
+  .Regt {
+    grid-column: 3;
+    grid-row: 2;
+    font-size: 1em;
+    line-height: 10px;
+    font-weight: 400;
+    color: #999;
   }
 
   .Account {
+    background-image: url('../../assets/tc_Odometer2.svg');
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
     z-index: 11;
     color: #fff;
     font-size: 1.5em;
     font-weight: 400;
     grid-column: 2;
+    height: 45px;
+    margin-top: 10px;
+  }
+  .Accounta {
+    grid-row: 2;
+    font-size: 1em;
+    line-height: 10px;
+    font-weight: 400;
+    color: #999;
   }
 
   .Home {
+    background-image: url('../../assets/tc_Time2.svg');
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
     z-index: 11;
     color: #fff;
     font-size: 1.5em;
     font-weight: 400;
     grid-column: 1;
+    height: 45px;
+    margin-top: 10px;
   }
-
+  .Homet {
+    grid-row: 2;
+    font-size: 1em;
+    line-height: 10px;
+    font-weight: 400;
+    color: #999;
+  }
   .Logout {
+    background-image: url('../../assets/tc_Cross2.svg');
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
     z-index: 11;
     color: #fff;
     font-size: 1.5em;
     font-weight: 400;
     grid-column: 3;
+    margin-top: 10px;
+    height: 45px;
+  }
+  .Logouta {
+    grid-row: 2;
+    font-size: 1em;
+    line-height: 10px;
+    font-weight: 400;
+    color: #999;
   }
 
   .navbar {
     width: 100%;
-    height: 100px;
-    border-bottom: 5px solid #000;
+    height: 80px;
     position: fixed;
+    background-image: url('../../assets/noise.png');
+    background-size: contain;
     top: 0;
     left: 0;
     right: 0;
-    z-index: 11;
+    z-index: 12;
     text-align: center;
     line-height: 70px;
     font-weight: lighter;
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    grid-template-rows: 100px;
-    background-color: #fff;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: 50px 35px;
+    box-shadow: 0px 2px 3px black;
   }
 
   .navpaneAnimation {

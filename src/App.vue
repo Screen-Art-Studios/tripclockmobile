@@ -40,7 +40,6 @@ export default {
             axios.post('https://api.tripclockmobile.com/users/tripclear/' + vue.user.id, {
             }, {headers: { 'Authorization': 'JWT ' + vue.user.token }})
               .then(result => {
-                console.log('trip ended')
                 vue.tripStarted = false
               })
               .catch(err => {
@@ -202,7 +201,6 @@ export default {
               tripStarted: true
             }, {headers: { 'Authorization': 'JWT ' + vue.user.token }})
               .then(result => {
-                console.log('trip started')
               })
               .catch(err => {
                 console.log(err)
@@ -228,7 +226,6 @@ export default {
             axios.post('https://api.tripclockmobile.com/users/tripclear/' + vue.user.id, {
             }, {headers: { 'Authorization': 'JWT ' + vue.user.token }})
               .then(result => {
-                console.log('trip ended')
                 vue.tripStarted = false
               })
               .catch(err => {
@@ -237,7 +234,7 @@ export default {
           }
         }
       } else {
-        navigator.geolocation.clearWatch()
+        navigator.geolocation.clearWatch(vue.mileageLocationSuccess)
         vue.watch = false
       }
       vue.pastCoordinates = vue.coordinates
@@ -319,7 +316,6 @@ export default {
               second: 0
             }
           }
-          console.log('trip Success!!')
         })
         .catch(function (error) {
           console.log(error)

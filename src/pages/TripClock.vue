@@ -225,28 +225,29 @@ export default {
 </script>
 
 <style scoped lang="less">
-@red: #c90c2e;
+@red: #751d1d;
 @grey: #323d38;
-@green: #3fb80b;
-@blue: #1D2395;
+@green: #54961e;
+@blue: #325e99;
 
 .timecrunch {
   position: fixed;
   width: 100%;
-  margin-top: 78px;
+  margin-top: 60px;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  grid-template-rows: repeat(7, 100px);
+  grid-template-rows: repeat(7, 80px);
 }
 
 .recenter {
   position: fixed;
+  font-weight: 300;
   width: 100%;
   margin: 0;
   padding: 0;
   font-size: 2em;
   height: 50px;
-  background-color: @red;
+  background-image: url('../assets/noise.png');
   color: #fff;
   bottom: 0;
   left: 0;
@@ -256,29 +257,29 @@ export default {
 #map {
   width: 100%;
   height: 100%;
-  padding-top: none;
   padding-bottom: 50px;
   z-index: 0;
   position: fixed;
-  top: 224px;
+  top: 190px;
   bottom: 50px;
 }
 
 .clock {
+  height: 81px;
   position: relative;
-  z-index: 2;
+  z-index: 6;
   text-align: center;
-  font-size: 4em;
+  font-size: 3em;
+  font-weight: 300;
   grid-row-start: 1;
   grid-row-end: 1;
   grid-column-start: 1;
   grid-column-end: 7;
-  padding-top: 20px;
-  line-height: 80px;
+  line-height: 100px;
   color: #fff;
-  background-color: @red;
-  box-shadow: 0px 1.5px 5px #000;
-  border-bottom: 5px solid #000;
+  background-image: url('../assets/noisered.png');
+  box-shadow: 0px 1px 5px black;
+  text-shadow: 0px 2px 5px black;
 }
 
 .clockRed {
@@ -432,5 +433,11 @@ export default {
   border-top-right-radius: 0;
   border-top-left-radius: 0;
 }
-
+.timeBtn {
+  font-weight: 400;
+  font-size: 1em;
+  z-index: 3;
+  background-image: url('../assets/noise.png');
+  border: 1px solid #999;
+}
 </style>
