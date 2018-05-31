@@ -6,17 +6,15 @@
       <button class="noQuestion" v-on:click="registerUser()">No</button>
     </div>
     <div class="waitingModal" v-else-if="modal==='wait'">
-      <h2>Please Wait</h2>
+      <h2>Please Wait...</h2>
     </div>
     <div class="registerModal" v-else-if="modal==='register'">
       <h1>Register</h1>
       <h3 v-if="error">Missing Inputs</h3>
-      <input class="name" v-model="name" placeholder="First Name">
+      <input class="name" v-model="name" placeholder="Name">
       <input class="email" v-model="email" placeholder="user@example.com">
-      <div class="adminInput">
-        <h5>Admin</h5>
-        <input type="checkbox" v-model="admin">
-      </div>
+      <h5>Make this User an Admin?</h5>
+      <input type="checkbox" v-model="admin">
       <input class="password" v-model="password" placeholder="*********" type="password" v-if="!showPass" v-on:keypress.enter="modal='question'">
       <input class="password" v-model="password" placeholder="*********" v-if="showPass" v-on:keypress.enter="modal='question'">
       <button class="togglePass" v-on:click="showPass = !showPass" v-if="!showPass">Show Password</button>
@@ -47,10 +45,9 @@
     </div>
     <div class="mainModal" v-else>
       <h2>Users: {{ users.length }}</h2>
-      <button v-on:click="modal='register'">Register a new User</button>
-      <h3>User List</h3>
+      <button class="regbutton" v-on:click="modal='register'">Register a New User</button>
       <div class="users" v-for="user in users" v-bind:key="user.id">
-        <span class="userInline" v-on:click="viewUser(user)">-{{ user.name }}</span>
+        <span v-on:click="viewUser(user)">{{ user.name }}</span>
       </div>
     </div>
   </div>
@@ -186,16 +183,30 @@ export default {
     height: 100%;
     width: 100%;
   }
-
+  .mainModal {
+    width: 100%;
+  }
+  .users {
+    margin-top: 5%;;
+    margin-left: 5%;
+    margin-right: 5%;
+    background-color: white;
+    box-shadow: 0px 1px 4px black;
+  }
+  span {
+    margin-top: 5%;
+    font-size: 1.5em;
+    margin-left: 5%;
+  }
+  .regbutton {
+    width: 90%;
+    margin-left: 5%;
+    margin-right: 5%;
+  }
   .registerModal {
   }
 
-  .mainModal {
-    width: 100%;
-    margin-top: 10px;
-  }
-
-  h1 {
+  h1, h2 {
     color: @red;
     text-align: center;
     font-size: 2.5em;
@@ -204,6 +215,11 @@ export default {
     margin-left: 10%;
     margin-bottom: 20px;
     font-weight: 300;
+  }
+
+  h5 {
+    text-align: center;
+    font-size: 1.5em;
   }
 
   h2 {
@@ -249,6 +265,8 @@ export default {
   .users {
     text-align: center;
     margin-top: 10px;
+    margin-left: 0;
+    padding-left: 0;
     width: 100%;
   }
 
@@ -354,12 +372,19 @@ export default {
   .employeeRegisterButton {
     grid-row: 1;
     grid-column-start: 1;
-    grid-column-end: 4;
+    grid-column-end: 5;
     height: 50px;
     margin: 0;
     margin-top: 10px;
-  }
 
+  }
+  .yesQuestion {
+    width: 40%;
+    margin-left: 10%;
+  }
+  .noQuestion {
+    width: 40%;
+  }
   h4 {
     grid-row: 2;
     grid-column: 3;
