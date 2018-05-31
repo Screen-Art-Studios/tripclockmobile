@@ -38,6 +38,7 @@ router.post("/", (req,res) => {
   var newClock = new Clock({
     userId: req.body.userId,
     clockType: req.body.clockType,
+    year: req.body.year,
     month: req.body.month,
     day: req.body.day,
     hours: req.body.hours,
@@ -66,6 +67,80 @@ router.get("/:userId", passport.authenticate('jwt', { session: false }),(req, re
       res.send(clocks);
     }
   })
+})
+
+router.get("/:userId/:filterParam", passport.authenticate('jwt', { session: false }),(req, res) => {
+  var userId = req.params["userId"];
+  var filterParam = req.params["filterParam"];
+  var today = new Date().getDate()
+  var thisMonth = new Date().getMonth();
+  var thisYear = new Date().getFullYear();
+  var clockArray = [];
+  if (filterParam === 'days') {
+    Clock.find({"userId": {$regex: '^' + userId}},function (err, clocks) {
+      if (err) {
+        res.send(err);
+      } else {
+        let i = 0;
+        for (i=0; i < clocks.length; i++) {
+          if (clocks[i].day === today && clocks[i].month === thisMonth && clocks[i].year === thisYear) {
+            clockArray.push(clocks[i]);
+          }
+        }
+        res.send(clockArray);
+      }
+    })
+  } else if (filterParam === 'week') {
+    Clock.find({"userId": {$regex: '^' + userId}},function (err, clocks) {
+      if (err) {
+        res.send(err);
+      } else {
+        let i = 0;
+        for (i=0; i < clocks.length; i++) {
+          if (clocks[i].day >= (today - 6) && clocks[i].day <= (today) && clocks[i].month === thisMonth && clocks[i].year === thisYear) {
+            clockArray.push(clocks[i]);
+          }
+        }
+        res.send(clockArray);
+      }
+    })
+  } else if (filterParam === 'month') {
+    Clock.find({"userId": {$regex: '^' + userId}},function (err, clocks) {
+      if (err) {
+        res.send(err);
+      } else {
+        let i = 0;
+        for (i=0; i < clocks.length; i++) {
+          if (clocks[i].month === thisMonth && clocks[i].year === thisYear) {
+            clockArray.push(clocks[i]);
+          }
+        }
+        res.send(clockArray);
+      }
+    })
+  } else if (filterParam === 'year') {
+    Clock.find({"userId": {$regex: '^' + userId}},function (err, clocks) {
+      if (err) {
+        res.send(err);
+      } else {
+        let i = 0;
+        for (i=0; i < clocks.length; i++) {
+          if (clocks[i].year === thisYear) {
+            clockArray.push(clocks[i]);
+          }
+        }
+        res.send(clockArray);
+      }
+    })
+  } else {
+    Clock.find({"userId": {$regex: '^' + userId}},function (err, clocks) {
+      if (err) {
+        res.send(err);
+      } else {
+        res.send(clocks);
+      }
+    })
+  }
 })
 
 module.exports = router;

@@ -41,6 +41,7 @@ router.post("/", (req,res) => {
   console.log(req.body.start.second)
   var newTrip = new Trip({
     userId: req.body.userId,
+    year: req.body.year,
     start: {
       latitude: req.body.start.latitude,
       longitude: req.body.start.longitude,
@@ -80,6 +81,80 @@ router.get("/:userId", passport.authenticate('jwt', { session: false }),(req, re
       res.send(trips);
     }
   })
+})
+
+router.get("/:userId/:filterParam", passport.authenticate('jwt', { session: false }),(req, res) => {
+  var userId = req.params["userId"];
+  var filterParam = req.params["filterParam"];
+  var today = new Date().getDate()
+  var thisMonth = new Date().getMonth();
+  var thisYear = new Date().getFullYear();
+  var tripArray = [];
+  if (filterParam === 'days') {
+    Trip.find({"userId": {$regex: '^' + userId}},function (err, trips) {
+      if (err) {
+        res.send(err);
+      } else {
+        let i = 0;
+        for (i=0; i < trips.length; i++) {
+          if (trips[i].start.day === today && trips[i].start.month === thisMonth && trips[i].year === thisYear) {
+            tripArray.push(trips[i]);
+          }
+        }
+        res.send(tripArray);
+      }
+    })
+  } else if (filterParam === 'week') {
+    Trip.find({"userId": {$regex: '^' + userId}},function (err, trips) {
+      if (err) {
+        res.send(err);
+      } else {
+        let i = 0;
+        for (i=0; i < trips.length; i++) {
+          if (trips[i].start.day >= (today - 6) && trips[i].start.day <= (today) && trips[i].start.month === thisMonth && trips[i].year === thisYear) {
+            tripArray.push(trips[i]);
+          }
+        }
+        res.send(tripArray);
+      }
+    })
+  } else if (filterParam === 'month') {
+    Trip.find({"userId": {$regex: '^' + userId}},function (err, trips) {
+      if (err) {
+        res.send(err);
+      } else {
+        let i = 0;
+        for (i=0; i < trips.length; i++) {
+          if (trips[i].start.month === thisMonth && trips[i].year === thisYear) {
+            tripArray.push(trips[i]);
+          }
+        }
+        res.send(tripArray);
+      }
+    })
+  } else if (filterParam === 'year') {
+    Trip.find({"userId": {$regex: '^' + userId}},function (err, trips) {
+      if (err) {
+        res.send(err);
+      } else {
+        let i = 0;
+        for (i=0; i < trips.length; i++) {
+          if (trips[i].year === thisYear) {
+            tripArray.push(trips[i]);
+          }
+        }
+        res.send(tripArray);
+      }
+    })
+  } else {
+    Trip.find({"userId": {$regex: '^' + userId}},function (err, trips) {
+      if (err) {
+        res.send(err);
+      } else {
+        res.send(trips);
+      }
+    })
+  }
 })
 
 router.get("/trips/:companyId", passport.authenticate('jwt', { session: false }),(req, res) => {

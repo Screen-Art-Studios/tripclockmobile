@@ -4,6 +4,15 @@
       <div class="timeGraphsPane" v-if="pane==='time'">
         <h4 v-if="modal==='user'">{{activeUser.name}}'s Time Record</h4>
         <h4>{{totalHours}} Total Hours Clocked</h4>
+        <h5>Filter to;</h5>
+        <select v-model="clocksFilter" class="clocksFilter">
+          <option value="days">Today</option>
+          <option value="week">This Week</option>
+          <option value="month">This Month</option>
+          <option value="year">This Year</option>
+          <option value="time">All Time</option>
+        </select>
+        <button class="clocksFilterActivate" v-on:click="filterClocks">Filter Clocks</button>
       </div>
       <div class="readouts" v-else-if="pane==='readout'">
         <div v-if="modal==='clock'">
@@ -20,6 +29,15 @@
       <div class="mileGraphsPane" v-else>
         <h4 v-if="modal==='user'">{{activeUser.name}}'s Mileage Record</h4>
         <h4>Total Miles Driven: {{totalDistance}}</h4>
+        <h5>Filter to;</h5>
+        <select v-model="tripsFilter" class="tripsFilter">
+          <option value="days">Today</option>
+          <option value="week">This Week</option>
+          <option value="month">This Month</option>
+          <option value="year">This Year</option>
+          <option value="time">All Time</option>
+        </select>
+        <button class="tripsFilterActivate" v-on:click="filterTrips">Filter Trips</button>
       </div>
     </div>
     <div class="timeTab" v-on:click="pane='time'" v-if="pane!=='readout'">Time</div>
@@ -164,6 +182,8 @@ export default {
       maxy: 0,
       zoom: 0,
       zoomNum: 0,
+      tripsFilter: 'month',
+      clocksFilter: 'month',
       mapboxToken: 'pk.eyJ1IjoiZ3JhcGV0b2FzdCIsImEiOiJjajhkeHR5YzEwdXp4MnpwbWhqYzI4ejh0In0.JzUlf5asD6yOa5XvjUF5Ag',
       mapOptions: {
         container: 'map',
@@ -186,6 +206,16 @@ export default {
       })
   },
   methods: {
+    filterTrips () {
+      let vue = this
+      vue.resetTime()
+      vue.populateCompanyTrips()
+    },
+    filterClocks () {
+      let vue = this
+      vue.resetTrips()
+      vue.populateCompanyClocks()
+    },
     viewUser (user) {
       let vue = this
       vue.days = []
@@ -203,7 +233,26 @@ export default {
       vue.activeUser.email = user.email
       vue.activeUser.admin = user.admin
       vue.populateUserClocks()
-      axios.get('https://api.tripclockmobile.com/trips/' + vue.activeUser.id, {headers: { 'Authorization': 'JWT ' + vue.user.token }})
+      vue.populateUserTrips()
+      vue.modal = 'user'
+    },
+    resetTime () {
+      let vue = this
+      vue.totalHours = 0
+      vue.totalTime = {
+        hours: 0,
+        minutes: 0,
+        seconds: 0
+      }
+    },
+    resetTrips () {
+      let vue = this
+      vue.totalDistance = 0
+      vue.activeTrips = []
+    },
+    populateUserTrips () {
+      let vue = this
+      axios.get('https://api.tripclockmobile.com/trips/' + vue.activeUser.id + '/' + vue.tripsFilter, {headers: { 'Authorization': 'JWT ' + vue.user.token }})
         .then(function (response) {
           vue.trips = []
           vue.trips = response.data
@@ -264,29 +313,14 @@ export default {
             }
           }
           vue.countTrips()
-          vue.modal = 'user'
         })
-        .catch(function (error) {
-          console.log(error)
+        .catch(err => {
+          console.log(err)
         })
-    },
-    resetTime () {
-      let vue = this
-      vue.totalHours = 0
-      vue.totalTime = {
-        hours: 0,
-        minutes: 0,
-        seconds: 0
-      }
-    },
-    resetTrips () {
-      let vue = this
-      vue.totalDistance = 0
-      vue.activeTrips = []
     },
     populateUserClocks () {
       let vue = this
-      axios.get('https://api.tripclockmobile.com/clocks/' + vue.activeUser.id, {headers: { 'Authorization': 'JWT ' + vue.user.token }})
+      axios.get('https://api.tripclockmobile.com/clocks/' + vue.activeUser.id + '/' + vue.clocksFilter, {headers: { 'Authorization': 'JWT ' + vue.user.token }})
         .then(function (response) {
           vue.clocks = []
           vue.clocks = response.data
@@ -361,6 +395,16 @@ export default {
         vue.populateUserClocks()
       }
     },
+    populateCompanyTrips () {
+      let vue = this
+      vue.totalDistance = 0
+      let i = 0
+      vue.tripDays = []
+      for (i = 0; i < vue.users.length; i++) {
+        vue.activeUser.id = vue.users[i]._id
+        vue.populateUserTrips()
+      }
+    },
     countClocks () {
       let vue = this
       vue.resetTime()
@@ -393,6 +437,15 @@ export default {
         vue.totalHours = Decimal(vue.totalTime.hours).add(minToHour).toNumber()
       }
     },
+    countTrips () {
+      let vue = this
+      let i = 0
+      for (i = 0; i < vue.trips.length; i++) {
+        let distance = vue.trips[i].distance
+        let distanceConv = Math.floor(Decimal(distance).div(1609.34))
+        vue.totalDistance = Decimal(vue.totalDistance).add(distanceConv).toNumber()
+      }
+    },
     viewClock (clock) {
       let vue = this
       vue.activeClock.userId = clock.userId
@@ -408,38 +461,6 @@ export default {
       vue.coordinates = [vue.activeClock.longitude, vue.activeClock.latitude]
       vue.pane = 'readout'
       vue.modal = 'clock'
-    },
-    populateCompanyTrips () {
-      let vue = this
-      vue.totalDistance = 0
-      let i = 0
-      vue.trips = []
-      for (i = 0; i < vue.users.length; i++) {
-        vue.activeUser.id = vue.users[i]._id
-        axios.get('https://api.tripclockmobile.com/trips/' + vue.activeUser.id, {headers: { 'Authorization': 'JWT ' + vue.user.token }})
-          .then(function (response) {
-            let j = 0
-            for (j = 0; j < response.data.length; j++) {
-              vue.trips.push(response.data[j])
-              if (vue.trips.length === response.data.length) {
-                vue.countTrips()
-              }
-            }
-            vue.trips = []
-          })
-          .catch(function (error) {
-            console.log(error)
-          })
-      }
-    },
-    countTrips () {
-      let vue = this
-      let i = 0
-      for (i = 0; i < vue.trips.length; i++) {
-        let distance = vue.trips[i].distance
-        let distanceConv = Math.floor(Decimal(distance).div(1609.34))
-        vue.totalDistance = Decimal(vue.totalDistance).add(distanceConv).toNumber()
-      }
     },
     viewTrip (trip) {
       let vue = this

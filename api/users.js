@@ -11,7 +11,7 @@ var router = express.Router();
 var mongoose = require("mongoose");
 var User = mongoose.model("User");
 var bcrypt = require('bcryptjs');
-var stripe = require("stripe")("sk_live_5Letjzf5nUQxCGo6vCCMWQDm");
+var stripe = require("stripe")("");
 var ExtractJwt = passportJWT.ExtractJwt;
 var JwtStrategy = passportJWT.Strategy;
 var transporter = nodemailer.createTransport({
@@ -21,7 +21,7 @@ var transporter = nodemailer.createTransport({
       requireTLS: true,
       auth: {
           user: 'royce@thumbnailconsulting.com',
-          pass: 'The-Dawnsflame71'
+          pass: ''
       },
       tls: {
           ciphers: 'SSLv3'
@@ -181,7 +181,8 @@ router.post("/tripclear/:id", passport.authenticate('jwt', { session: false }), 
   var userid = new mongodb.ObjectID(req.params["id"]);
   User.find({"_id": userid},function (err, user) {
     if (err) {
-        res.status(500).send(err);
+      console.log(err);
+      res.status(500).send(err);
     } else {
         var user = user[0];
         user.tempTrip = {
@@ -197,6 +198,38 @@ router.post("/tripclear/:id", passport.authenticate('jwt', { session: false }), 
 
         user.save(function (err, user) {
             if (err) {
+              console.log(err);
+              res.status(500).send(err)
+            }
+            res.send(user);
+        });
+      }
+  });
+})
+
+router.put("/tripclear/:id", passport.authenticate('jwt', { session: false }), (req,res) => {
+  var userid = new mongodb.ObjectID(req.params["id"]);
+  User.find({"_id": userid},function (err, user) {
+    if (err) {
+      console.log(err);
+      res.status(500).send(err);
+    } else {
+        var user = user[0];
+        user.tempTrip = {
+          latitude: '',
+          longitude: '',
+          month: 0,
+          day: 0,
+          hour: 0,
+          minute: 0,
+          second: 0,
+        };
+        user.tripStarted = false;
+        user.stripeSubscription = req.body.stripeSubscription || user.stripeSubscription;
+
+        user.save(function (err, user) {
+            if (err) {
+              console.log(err);
               res.status(500).send(err)
             }
             res.send(user);
@@ -243,6 +276,7 @@ router.put("/:id", passport.authenticate('jwt', { session: false }), (req, res) 
         user.payment = req.body.payment || user.payment;
         user.stripeSource = req.body.stripeSource || user.stripeSource;
         user.stripeCustomer = req.body.stripeCustomer || user.stripeCustomer;
+        user.stripeSubscription = req.body.stripeSubscription || user.stripeSubscription;
 
         user.save(function (err, user) {
             if (err) {

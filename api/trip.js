@@ -4,6 +4,9 @@ var TripSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  year: {
+    type: Number
+  },
   start: {
     latitude: {
       type: String,

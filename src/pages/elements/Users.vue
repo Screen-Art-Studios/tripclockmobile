@@ -2,8 +2,8 @@
   <div class="main">
     <div class="questionModal" v-if="modal==='question'">
       <h2>Should we email the employee their credentials?</h2>
-      <button class="yesQuestion" v-on:click="modal='wait'; emailRegister()">Yes</button>
-      <button class="noQuestion" v-on:click="modal='wait'; registerUser()">No</button>
+      <button class="yesQuestion" v-on:click="emailRegister()">Yes</button>
+      <button class="noQuestion" v-on:click="registerUser()">No</button>
     </div>
     <div class="waitingModal" v-else-if="modal==='wait'">
       <h2>Please Wait</h2>
@@ -13,12 +13,15 @@
       <h3 v-if="error">Missing Inputs</h3>
       <input class="name" v-model="name" placeholder="First Name">
       <input class="email" v-model="email" placeholder="user@example.com">
-      <h5>Admin</h5>
-      <input type="checkbox" v-model="admin">
+      <div class="adminInput">
+        <h5>Admin</h5>
+        <input type="checkbox" v-model="admin">
+      </div>
       <input class="password" v-model="password" placeholder="*********" type="password" v-if="!showPass" v-on:keypress.enter="modal='question'">
       <input class="password" v-model="password" placeholder="*********" v-if="showPass" v-on:keypress.enter="modal='question'">
       <button class="togglePass" v-on:click="showPass = !showPass" v-if="!showPass">Show Password</button>
       <button class="togglePass" v-on:click="showPass = !showPass" v-if="showPass">Hide Password</button>
+      <button class="editBack" v-on:click="modal=''; resetUsers">Back</button>
       <button class="registerUser" v-on:click="modal='question'">Register User</button>
     </div>
     <div class="editModal" v-else-if="modal==='edit'">
@@ -26,8 +29,10 @@
       <h3 v-if="error">Missing Inputs</h3>
       <input class="name" v-model="name" placeholder="First Name">
       <input class="email" v-model="email" placeholder="user@example.com">
-      <h5 v-if="!payment">Admin</h5>
-      <input type="checkbox" v-model="admin" v-if="!payment">
+      <div class="adminInput">
+        <h5 v-if="!payment">Admin</h5>
+        <input type="checkbox" v-model="admin" v-if="!payment">
+      </div>
       <button class="updateUser" v-on:click="updateUser">Update User</button>
       <button class="deleteUser" v-on:click="deleteUser" v-if="!payment">Delete User</button>
       <button class="editBack" v-on:click="modal=''; resetUsers">Back</button>
@@ -43,8 +48,9 @@
     <div class="mainModal" v-else>
       <h2>Users: {{ users.length }}</h2>
       <button v-on:click="modal='register'">Register a new User</button>
-      <div v-for="user in users" v-bind:key="user.id">
-        <span v-on:click="viewUser(user)">{{ user.name }}</span>
+      <h3>User List</h3>
+      <div class="users" v-for="user in users" v-bind:key="user.id">
+        <span class="userInline" v-on:click="viewUser(user)">-{{ user.name }}</span>
       </div>
     </div>
   </div>
@@ -146,6 +152,7 @@ export default {
     },
     registerUser () {
       let vue = this
+      vue.modal = 'wait'
       axios.post('https://api.tripclockmobile.com/users', {
         email: vue.email,
         password: vue.password,
@@ -183,6 +190,11 @@ export default {
   .registerModal {
   }
 
+  .mainModal {
+    width: 100%;
+    margin-top: 10px;
+  }
+
   h1 {
     color: @red;
     text-align: center;
@@ -192,6 +204,59 @@ export default {
     margin-left: 10%;
     margin-bottom: 20px;
     font-weight: 300;
+  }
+
+  h2 {
+    text-align: center;
+    margin-top: 10px;
+  }
+
+  h3 {
+    text-align: center;
+    margin-top: 10px;
+  }
+
+  h5 {
+    text-align: center;
+    grid-column: 1;
+    width: 100%;
+    height: 2em;
+    font-size: 1em;
+    margin: 0;
+    padding: 0;
+  }
+
+  .adminInput {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    height: 3em;
+    padding-top: .5em;
+    padding-bottom:  .5em;
+  }
+
+  .adminInput input {
+    padding-top: 20%;
+    padding-right: 40%;
+    height: 2em;
+  }
+
+  .userInline {
+    text-align: center;
+    margin-top: 10px;
+    width: 100%;
+  }
+
+  .users {
+    text-align: center;
+    margin-top: 10px;
+    width: 100%;
+  }
+
+  button {
+    margin-left: 5%;
+    text-align: center;
+    margin-top: 10px;
+    width: 90%;
   }
 
   select option[data-default] {
@@ -227,7 +292,6 @@ export default {
     color: #fff;
     border: none;
     font-size: 1.5em;
-    margin-left: 10px;
     border-radius: 5px;
     box-shadow: 0px 2px 5px black;
   }

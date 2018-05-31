@@ -37,7 +37,7 @@ export default {
             vue.trip.start.coordinates = [parseInt(result.data.tempTrip.longitude), parseInt(result.data.tempTrip.latitude)]
             vue.tripStarted = result.data.tripStarted
           } else {
-            axios.post('https://api.tripclockmobile.com/users/tripclear/' + vue.user.id, {
+            axios.put('https://api.tripclockmobile.com/users/tripclear/' + vue.user.id, {
             }, {headers: { 'Authorization': 'JWT ' + vue.user.token }})
               .then(result => {
                 vue.tripStarted = false
@@ -81,6 +81,7 @@ export default {
       trip: {
         userId: '',
         distance: 0,
+        year: 0,
         start: {
           startCoordinates: [0, 0],
           latitude: '',
@@ -213,6 +214,7 @@ export default {
           if (totalDiff < 0.0007) {
             vue.trip.end.endCoordinates = vue.coordinates
             vue.time = new Date()
+            vue.trip.year = vue.time.getFullYear
             vue.trip.end.month = vue.time.getMonth()
             vue.trip.end.day = vue.time.getDate()
             vue.trip.end.hour = vue.time.getHours()
@@ -271,6 +273,7 @@ export default {
       let vue = this
       axios.post('https://api.tripclockmobile.com/trips', {
         userId: vue.user.id,
+        year: vue.trip.year,
         start: {
           latitude: vue.trip.start.latitude,
           longitude: vue.trip.start.longitude,

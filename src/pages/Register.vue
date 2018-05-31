@@ -198,6 +198,10 @@ export default {
     font-weight: 300;
   }
 
+  h4 {
+    text-align: center;
+  }
+
   select option[data-default] {
     color: #888;
   }

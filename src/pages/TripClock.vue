@@ -135,6 +135,7 @@ export default {
     clock () {
       let vue = this
       vue.time = new Date()
+      vue.year = vue.time.getFullYear()
       vue.month = vue.time.getMonth()
       vue.day = vue.time.getDate()
       vue.hours = vue.time.getHours()
@@ -143,6 +144,7 @@ export default {
       axios.post('https://api.tripclockmobile.com/clocks', {
         userId: vue.user.id,
         clockType: vue.activeClockType,
+        year: vue.year,
         month: vue.month,
         day: vue.day,
         hours: vue.hours,
