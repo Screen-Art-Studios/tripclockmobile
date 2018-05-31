@@ -9,8 +9,8 @@
       <input class="password" v-model="password" placeholder="*********" v-if="showPass" v-on:keypress.enter="registerUser">
     </div>
     <div class="companyRegister" v-else>
-      <h1>Register a new Company Code</h1>
-      <h4>it can be any combination of letter and numbers*</h4>
+      <h1>Register a New Company Code</h1>
+      <h4>You make this yourself. It can be any combination of letters and numbers*</h4>
       <h3 v-if="error">Missing Inputs</h3>
       <h3 v-if="taken">Company Code Taken</h3>
       <input class="companyCode" v-model="companyId" placeholder="Company Code">
@@ -301,11 +301,12 @@ export default {
   }
 
   h4 {
-    grid-row: 2;
-    grid-column: 3;
-    font-size: 0.9em;
-    margin: 0;
-    color: @red;
+    width: 90%;
+    margin-right: 5%;
+    margin-left: 5%;
+    color: #555;
+    font-size: 1em;
+    line-height: 15px;
   }
 
   .back {

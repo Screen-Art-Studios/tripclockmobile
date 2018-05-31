@@ -6,14 +6,14 @@
       <button class="noQuestion" v-on:click="modal='wait'; registerUser()">No</button>
     </div>
     <div class="waitingModal" v-else-if="modal==='wait'">
-      <h2>Please Wait</h2>
+      <h2>Please Wait...</h2>
     </div>
     <div class="registerModal" v-else-if="modal==='register'">
       <h1>Register</h1>
       <h3 v-if="error">Missing Inputs</h3>
-      <input class="name" v-model="name" placeholder="First Name">
+      <input class="name" v-model="name" placeholder="Name">
       <input class="email" v-model="email" placeholder="user@example.com">
-      <h5>Admin</h5>
+      <h5>Make this User an Admin?</h5>
       <input type="checkbox" v-model="admin">
       <input class="password" v-model="password" placeholder="*********" type="password" v-if="!showPass" v-on:keypress.enter="modal='question'">
       <input class="password" v-model="password" placeholder="*********" v-if="showPass" v-on:keypress.enter="modal='question'">
@@ -42,8 +42,8 @@
     </div>
     <div class="mainModal" v-else>
       <h2>Users: {{ users.length }}</h2>
-      <button v-on:click="modal='register'">Register a new User</button>
-      <div v-for="user in users" v-bind:key="user.id">
+      <button class="regbutton" v-on:click="modal='register'">Register a New User</button>
+      <div class="users" v-for="user in users" v-bind:key="user.id">
         <span v-on:click="viewUser(user)">{{ user.name }}</span>
       </div>
     </div>
@@ -179,11 +179,30 @@ export default {
     height: 100%;
     width: 100%;
   }
-
+  .mainModal {
+    width: 100%;
+  }
+  .users {
+    margin-top: 5%;;
+    margin-left: 5%;
+    margin-right: 5%;
+    background-color: white;
+    box-shadow: 0px 1px 4px black;
+  }
+  span {
+    margin-top: 5%;
+    font-size: 1.5em;
+    margin-left: 5%;
+  }
+  .regbutton {
+    width: 90%;
+    margin-left: 5%;
+    margin-right: 5%;
+  }
   .registerModal {
   }
 
-  h1 {
+  h1, h2 {
     color: @red;
     text-align: center;
     font-size: 2.5em;
@@ -192,6 +211,10 @@ export default {
     margin-left: 10%;
     margin-bottom: 20px;
     font-weight: 300;
+  }
+  h5 {
+    text-align: center;
+    font-size: 1.5em;
   }
 
   select option[data-default] {
@@ -227,7 +250,6 @@ export default {
     color: #fff;
     border: none;
     font-size: 1.5em;
-    margin-left: 10px;
     border-radius: 5px;
     box-shadow: 0px 2px 5px black;
   }
@@ -290,12 +312,19 @@ export default {
   .employeeRegisterButton {
     grid-row: 1;
     grid-column-start: 1;
-    grid-column-end: 4;
+    grid-column-end: 5;
     height: 50px;
     margin: 0;
     margin-top: 10px;
-  }
 
+  }
+  .yesQuestion {
+    width: 40%;
+    margin-left: 10%;
+  }
+  .noQuestion {
+    width: 40%;
+  }
   h4 {
     grid-row: 2;
     grid-column: 3;
