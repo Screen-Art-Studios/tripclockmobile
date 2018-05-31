@@ -25,9 +25,11 @@
       <button class="back" v-on:click="$emit('account')">Back</button>
     </div>
     <analytics class="analyticsComponent" v-on:back="$emit('account')" v-else-if="accountView==='analytics'" :user="user"></analytics>
+    <users class="usersComponent" v-on:back="$emit('account')" v-else-if="accountView==='users'" :user="user"></users>
     <div class="accountHome" v-else>
       <h1>Account</h1>
       <button class="analytics" v-on:click="$emit('account', 'analytics')" v-if="user.admin">Analytics</button>
+      <button class="users" v-on:click="$emit('account', 'users')" v-if="user.admin">Users</button>
       <button class="update" v-on:click="$emit('account', 'pass')">Update Password</button>
       <button class="viewAccount" v-on:click="$emit('account', 'view')">View Account</button>
     </div>
@@ -37,11 +39,13 @@
 <script>
 import axios from 'axios'
 import Analytics from './elements/Analytics'
+import Users from './elements/Users'
 
 export default {
   name: 'account',
   components: {
-    'analytics': Analytics
+    'analytics': Analytics,
+    'users': Users
   },
   props: ['logged', 'user', 'accountView'],
   data () {

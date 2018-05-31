@@ -5,14 +5,28 @@ var bodyParser = require("body-parser");
 var passport = require("passport");
 var passportJWT = require("passport-jwt");
 var jwt = require('jsonwebtoken');
+var nodemailer = require('nodemailer');
 var app = express();
 var router = express.Router();
 var mongoose = require("mongoose");
 var User = mongoose.model("User");
 var bcrypt = require('bcryptjs');
-var stripe = require("stripe")("");
+var stripe = require("stripe")("sk_live_5Letjzf5nUQxCGo6vCCMWQDm");
 var ExtractJwt = passportJWT.ExtractJwt;
 var JwtStrategy = passportJWT.Strategy;
+var transporter = nodemailer.createTransport({
+      host: 'smtp.office365.com', // Office 365 server
+      port: 587,     // secure SMTP
+      ignoreTLS: false,
+      requireTLS: true,
+      auth: {
+          user: 'royce@thumbnailconsulting.com',
+          pass: 'The-Dawnsflame71'
+      },
+      tls: {
+          ciphers: 'SSLv3'
+      }
+  });
 
 var jwtOptions = {}
 jwtOptions.jwtFromRequest = ExtractJwt.fromAuthHeaderWithScheme("JWT");
@@ -68,26 +82,30 @@ router.post("/", (req,res) => {
       const subscription = stripe.subscriptions.create({
         customer: StripeCustomer,
         items: [{plan: 'plan_Chp8vqhbDhX0AO'}],
+      }).then(response => {
+        var subscriptionId = response.id;
+        createNewUser(StripeCustomer, subscriptionId);
       });
-      createNewUser(StripeCustomer);
+
     });
   } else {
     User.findOne({"companyId": req.body.companyId, "payment": true}, function (err, users) {
-      let customer = stripe.customers.create({
-        email: req.body.email,
-        source: users.stripeSource,
-      }, function(err, customer) {
-        let StripeCustomer = customer.id
-        const subscription = stripe.subscriptions.create({
-          customer: StripeCustomer,
-          items: [{plan: 'plan_Ck0QWtUB1LiEvf'}],
-        });
-        createNewUser(StripeCustomer);
+      const subscription = stripe.subscriptions.create({
+        customer: users.stripeCustomer,
+        items: [{plan: 'plan_Ck0QWtUB1LiEvf'}],
+      })
+      .then(response => {
+        var subscriptionId = response.id;
+        let StripeCustomer = users.stripeCustomer;
+        createNewUser(StripeCustomer, subscriptionId);
+      })
+      .catch(err => {
+        console.log(err)
       });
     })
   }
 
-  function createNewUser (StripeCustomer) {
+  function createNewUser (StripeCustomer, subscriptionId) {
     var newUser = new User({
     email: req.body.email,
     password: req.body.password,
@@ -96,16 +114,42 @@ router.post("/", (req,res) => {
     admin: req.body.admin,
     payment: req.body.payment,
     stripeSource: req.body.stripeSource,
-    stripeCustomer: StripeCustomer
+    stripeCustomer: StripeCustomer,
+    stripeSubscription: subscriptionId
     })
 
     newUser.save((err, result) => {
       if(err) {
+        console.log(err);
         res.send(err);
       } else {
         User.findOne({"email": req.body.email}, function (err, users) {
           var payload = {"id": users.id};
           var token = jwt.sign(payload, jwtOptions.secretOrKey);
+          if (req.body.emailUser === true) {
+            var mailOptions = {
+                from: `Trip Clock Mobile <royce@thumbnailconsulting.com>`, // sender address
+                to: req.body.email, // list of recipients
+                subject: 'Trip Clock Mobile Credentials', // Subject line
+                text: `Welcome to Trip Clock Mobile ${req.body.name},
+                Your login credentials are as follows;
+                Email: ${req.body.email}
+                Password: ${req.body.password}`, // plaintext body
+                html: `<h2>Welcome to Trip Clock Mobile ${req.body.name}</h2>
+                <p>
+                  Your login credentials are as follows;
+                  Email: ${req.body.email}
+                  Password: ${req.body.password}
+                </p>` // html body
+            };
+            transporter.sendMail(mailOptions, function(error, info){
+                if(error){
+                    return console.log(error);
+                    res.send(error);
+                }
+                console.log('sent')
+            });
+          }
           res.status(201).json({userId: users.id, token: token, companyId: users.companyId, admin: users.admin});
         })
       }
@@ -202,6 +246,7 @@ router.put("/:id", passport.authenticate('jwt', { session: false }), (req, res) 
 
         user.save(function (err, user) {
             if (err) {
+              console.log(err)
               res.status(500).send(err)
             }
             res.send(user);
@@ -212,8 +257,17 @@ router.put("/:id", passport.authenticate('jwt', { session: false }), (req, res) 
 
 router.delete("/:id", passport.authenticate('jwt', { session: false }), (req, res) => {
   var userid = new mongodb.ObjectID(req.params["id"]);
-  User.find({_id: userid}).remove().then(() => {
-    res.send("success");
+  User
+  .find({_id: userid},function (err, user) {
+    stripe.subscriptions.del(user[0].stripeSubscription)
+    .catch(err => {
+      console.log(err);
+    });
+  })
+  .then(() => {
+    User.find({_id: userid}).remove().then(() => {
+      res.send("success");
+    })
   })
 })
 

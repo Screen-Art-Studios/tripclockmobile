@@ -8,29 +8,14 @@
       <input class="password" v-model="password" placeholder="*********" type="password" v-if="!showPass" v-on:keypress.enter="registerUser">
       <input class="password" v-model="password" placeholder="*********" v-if="showPass" v-on:keypress.enter="registerUser">
     </div>
-    <div class="employeeRegister" v-else-if="modal==='employee'">
-      <h1>Enter Company Code</h1>
-      <h3 v-if="error">Wrong Code</h3>
-      <input class="companyCode" v-model="companyId" placeholder="Company Code">
-      <button class="submitEmployee" v-on:click="submitCompanyId">Submit</button>
-      <button class="back" v-on:click="modal=''; error=false">Back</button>
-    </div>
-    <div class="companyRegister" v-else-if="modal==='company'">
-      <h1>Enter Company Information</h1>
+    <div class="companyRegister" v-else>
+      <h1>Register a new Company Code</h1>
+      <h4>it can be any combination of letter and numbers*</h4>
       <h3 v-if="error">Missing Inputs</h3>
       <h3 v-if="taken">Company Code Taken</h3>
       <input class="companyCode" v-model="companyId" placeholder="Company Code">
       <input class="companyName" v-model="companyName" placeholder="Company Name">
       <button class="submitCompany" v-on:click="submitCompany">Submit</button>
-      <button class="back" v-on:click="modal=''; error=false">Back</button>
-    </div>
-    <div class="chooseRegister" v-else>
-      <h1>Are you Registering a New Company?</h1>
-      <button class="companyRegisterButton" v-on:click="modal='company'">Yes</button>
-      <div class="exception">
-        <button class="employeeRegisterButton" v-on:click="modal='employee'">No</button>
-        <h4>*Must have a company Code</h4>
-      </div>
       <button class="back" v-on:click="$router.push('/login')">Back</button>
     </div>
     <div v-show="modal==='register'">

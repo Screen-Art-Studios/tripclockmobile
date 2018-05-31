@@ -42,6 +42,10 @@ var UserSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  stripeSubscription: {
+    type: String,
+    required: true
+  },
   tempTrip: {
     latitude: {
       type: String,
