@@ -4,7 +4,7 @@
       <div class="timeGraphsPane" v-if="pane==='time'">
         <h4 v-if="modal==='user'">{{activeUser.name}}'s Time Record</h4>
         <h4>{{totalHours}} Total Hours Clocked</h4>
-        <h5>Filter to;</h5>
+        <h5>Sort By</h5>
         <select v-model="clocksFilter" class="clocksFilter">
           <option value="days">Today</option>
           <option value="week">This Week</option>
@@ -29,7 +29,7 @@
       <div class="mileGraphsPane" v-else>
         <h4 v-if="modal==='user'">{{activeUser.name}}'s Mileage Record</h4>
         <h4>Total Miles Driven: {{totalDistance}}</h4>
-        <h5>Filter to;</h5>
+        <h5>Sort By</h5>
         <select v-model="tripsFilter" class="tripsFilter">
           <option value="days">Today</option>
           <option value="week">This Week</option>
@@ -835,5 +835,14 @@ input {
   margin-top: 15px;
   color: white;
   background-image: url('../../assets/noise.png');
+}
+.tripsFilter, .clocksFilter {
+  border: 1px solid black;
+  margin-left: 5%;
+}
+.tripsFilterActivate, .clocksFilterActivate {
+  color: white;
+  background-image: url('../../assets/noise.png');
+  border-radius: 5px;
 }
 </style>
