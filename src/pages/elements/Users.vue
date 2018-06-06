@@ -11,8 +11,8 @@
     <div class="registerModal" v-else-if="modal==='register'">
       <h1>Register</h1>
       <h3 v-if="error">Missing Inputs</h3>
-      <input class="name" v-model="name" placeholder="Name">
       <input class="email" v-model="email" placeholder="user@example.com">
+      <input class="name" v-model="name" placeholder="Name">
       <h5>Make this User an Admin?</h5>
       <input type="checkbox" v-model="admin">
       <input class="password" v-model="password" placeholder="*********" type="password" v-if="!showPass" v-on:keypress.enter="modal='question'">

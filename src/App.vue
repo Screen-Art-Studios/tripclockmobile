@@ -256,7 +256,6 @@ export default {
       vue.longitude = position.coords.longitude.toPrecision(12)
     },
     locationFail () {
-      alert('It seems we cant find you, please reload the page and try again.')
       this.locationError = true
     },
     getDirections () {

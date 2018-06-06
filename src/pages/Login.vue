@@ -178,4 +178,29 @@ export default {
 
   @media (min-width: 700px) {
   }
+
+  @media only screen
+    and (min-device-width : 414px)
+    and (max-device-width : 736px) {
+      .main {
+        margin-top: 40px;
+      }
+    }
+
+  @media only screen
+    and (min-device-width : 375px)
+    and (max-device-width : 667px) {
+      .main {
+        margin-top: 40px;
+      }
+    }
+
+  @media only screen
+    and (min-device-width : 375px)
+    and (max-device-width : 812px)
+    and (-webkit-device-pixel-ratio : 3) {
+      .main {
+        margin-top: 40px;
+      }
+    }
 </style>

@@ -4,15 +4,15 @@
       <div class="timeGraphsPane" v-if="pane==='time'">
         <h4 v-if="modal==='user'">{{activeUser.name}}'s Time Record</h4>
         <h4>{{totalHours}} Total Hours Clocked</h4>
-        <h5>Sort By</h5>
-        <select v-model="clocksFilter" class="clocksFilter">
+        <h5 v-if="modal==='user'">Sort By</h5>
+        <select v-model="clocksFilter" class="clocksFilter" v-if="modal==='user'">
           <option value="days">Today</option>
           <option value="week">This Week</option>
           <option value="month">This Month</option>
           <option value="year">This Year</option>
           <option value="time">All Time</option>
         </select>
-        <button class="clocksFilterActivate" v-on:click="filterClocks">Filter Clocks</button>
+        <button class="clocksFilterActivate" v-on:click="filterClocks" v-if="modal==='user'">Filter Clocks</button>
       </div>
       <div class="readouts" v-else-if="pane==='readout'">
         <div v-if="modal==='clock'">
@@ -29,15 +29,15 @@
       <div class="mileGraphsPane" v-else>
         <h4 v-if="modal==='user'">{{activeUser.name}}'s Mileage Record</h4>
         <h4>Total Miles Driven: {{totalDistance}}</h4>
-        <h5>Sort By</h5>
-        <select v-model="tripsFilter" class="tripsFilter">
+        <h5 v-if="modal==='user'">Sort By</h5>
+        <select v-model="tripsFilter" class="tripsFilter" v-if="modal==='user'">
           <option value="days">Today</option>
           <option value="week">This Week</option>
           <option value="month">This Month</option>
           <option value="year">This Year</option>
           <option value="time">All Time</option>
         </select>
-        <button class="tripsFilterActivate" v-on:click="filterTrips">Filter Trips</button>
+        <button class="tripsFilterActivate" v-on:click="filterTrips" v-if="modal==='user'">Filter Trips</button>
       </div>
     </div>
     <div class="timeTab" v-on:click="pane='time'" v-if="pane!=='readout'">Time</div>
@@ -845,4 +845,29 @@ input {
   background-image: url('../../assets/noise.png');
   border-radius: 5px;
 }
+
+@media only screen
+  and (min-device-width : 414px)
+  and (max-device-width : 736px) {
+    .analytics {
+      margin-top: 40px;
+    }
+  }
+
+@media only screen
+  and (min-device-width : 375px)
+  and (max-device-width : 667px) {
+    .analytics {
+      margin-top: 40px;
+    }
+  }
+
+@media only screen
+  and (min-device-width : 375px)
+  and (max-device-width : 812px)
+  and (-webkit-device-pixel-ratio : 3) {
+    .analytics {
+      margin-top: 40px;
+    }
+  }
 </style>

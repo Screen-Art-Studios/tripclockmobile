@@ -442,4 +442,38 @@ export default {
   background-image: url('../assets/noise.png');
   border: 1px solid #999;
 }
+
+@media only screen
+  and (min-device-width : 414px)
+  and (max-device-width : 736px) {
+    .timecrunch {
+      margin-top: 110px;
+    }
+    #map {
+      top: 230px;
+    }
+  }
+
+@media only screen
+  and (min-device-width : 375px)
+  and (max-device-width : 667px) {
+    .timecrunch {
+      margin-top: 110px;
+    }
+    #map {
+      top: 230px;
+    }
+  }
+
+@media only screen
+  and (min-device-width : 375px)
+  and (max-device-width : 812px)
+  and (-webkit-device-pixel-ratio : 3) {
+    .timecrunch {
+      margin-top: 110px;
+    }
+    #map {
+      top: 230px;
+    }
+  }
 </style>
